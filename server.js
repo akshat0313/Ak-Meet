@@ -58,7 +58,7 @@ app.get('/:room', isLoggedIn, (req, res) => {
 app.get('/logout', function(req, res) {
     req.session.destroy(function(e){
         req.logout();
-        res.redirect('/home');
+        res.redirect('/');
     });
 });
 

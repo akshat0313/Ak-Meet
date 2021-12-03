@@ -669,7 +669,7 @@
   margin: 0;
   box-sizing: border-box;
 }
-form {
+section {
   height: 300px;
   width: 400px;
   background-color: rgba(54, 69, 79, 0.25);
@@ -684,7 +684,7 @@ form {
   box-shadow: 0 0 40px rgba(8, 7, 16, 0.6);
   padding: 50px 35px;
 }
-form * {
+section * {
   font-family: "Poppins", sans-serif;
   color: #ffffff;
   letter-spacing: 0.5px;
@@ -693,12 +693,12 @@ form * {
 }
 
 @media (prefers-color-scheme: dark) {
-  form * {
+  section * {
     color: #ffffff;
   }
 }
 
-form h3 {
+section h3 {
   font-size: 50px;
   font-weight: 500;
   line-height: 42px;
@@ -792,15 +792,15 @@ button:hover {
   <script src="https://cdn.jsdelivr.net/npm/@webcomponents/webcomponentsjs@2.5.0/webcomponents-loader.js"></script>
   <script type="module" src="https://cdn.jsdelivr.net/npm/web-particles@1.1.0/dist/web-particles.min.js"></script>
   
-  <form>
+  <section>
     <h3>ILLUSION</h3>
   
-    <button><a  href="">Google Sign In</a></button>
+    <a  href="auth/google"><button>Google Sign In</button></a>
     <div class="social">
       <!-- <div class="go"><i class="fab fa-github"></i> Github</div>
       <div class="fb"><i class="fab fa-discord"></i> Discord</div> -->
     </div>
-  </form>
+  </section>
   <script>
       let themeableContainer;
 
