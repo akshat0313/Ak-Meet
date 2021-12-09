@@ -37,7 +37,12 @@ app.get( '/auth/google/callback',
   })
 );
 
-app.get('/view',(req,res) => { res.render('view')})
+app.get('/view',(req,res) => { 
+  res.render('view');
+  roomId="";
+  userId="";
+  ROOM_ID="";
+})
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
@@ -55,12 +60,12 @@ app.get('/:room', isLoggedIn, (req, res) => {
   res.render('room', { roomId: req.params.room })
 })
 
-app.get('/logout', function(req, res) {
-    req.session.destroy(function(e){
-        req.logout();
-        res.redirect('/');
-    });
-});
+// app.get('/logout', function(req, res) {
+//     req.session.destroy(function(e){
+//         req.logout();
+//         res.redirect('/');
+//     });
+// });
 
 app.get('/auth/google/failure', (req, res) => {
   res.send('Failed to authenticate..');
