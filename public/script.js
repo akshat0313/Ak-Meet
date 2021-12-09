@@ -58,7 +58,7 @@ function connectToNewUser(userId, stream) {
     addVideoStream(video, userVideoStream)
   })
   call.on('close', () => {
-    video.remove()
+    Video.remove()
   })
 
   peers[userId] = call
@@ -67,7 +67,7 @@ function connectToNewUser(userId, stream) {
 function addVideoStream(video, stream) {
   video.srcObject = stream
   video.addEventListener('loadedmetadata', () => {
-    video.play()
+    Video.play()
   })
   videoGrid.append(video)
 }
