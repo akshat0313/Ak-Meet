@@ -25,11 +25,13 @@ navigator.mediaDevices.getUserMedia({
 
   socket.on('user-connected', userId => {
    
-      setTimeout(connectToNewUser,1000,userId,stream)
+      setTimeout(connectToNewUser,1000,userId,stream) 
     
-  })
+  }) 
+
   // input value
   let text = $("input");
+
   // when press enter send message
   $('html').keydown(function (e) {
     if (e.which == 13 && text.val().length !== 0) {
@@ -37,6 +39,7 @@ navigator.mediaDevices.getUserMedia({
       text.val('')
     }
   });
+
   socket.on("createMessage", message => {
     $("ul").append(`<li class="message"><b>user</b><br/>${message}</li>`);
     scrollToBottom()
@@ -58,7 +61,7 @@ function connectToNewUser(userId, stream) {
     addVideoStream(video, userVideoStream)
   })
   call.on('close', () => {
-    Video.remove()
+    video.remove()
   })
 
   peers[userId] = call
@@ -67,7 +70,7 @@ function connectToNewUser(userId, stream) {
 function addVideoStream(video, stream) {
   video.srcObject = stream
   video.addEventListener('loadedmetadata', () => {
-    Video.play()
+    video.play()
   })
   videoGrid.append(video)
 }
