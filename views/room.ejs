@@ -17,6 +17,9 @@
   <script src="script.js" defer></script>
   <script src='https://wzrd.in/standalone/copy-button@latest'></script>
   <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.1/socket.io.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.1.2/simplepeer.min.js"></script>  
+   <script src="../public/scrsh.js"></script>
   <link rel="stylesheet" href="style.css">
   <title>Document</title>
   <style>
@@ -43,6 +46,7 @@
        <div class="main__left">
           <div class="main__videos">
              <div id="video-grid">
+               <video autoplay></video><br />  
        
              </div>
           </div>
@@ -56,13 +60,20 @@
                    <i class="fas fa-video"></i>
                    <span>Stop Video</span>
                 </div>
+
              </div>
+
              <div class="main__controls__block">
-                
+<!--                 
                 <div class="main__controls__button">
                    <p id="uuid" ><window class="href">Ak-Meet</window></p>
+                   <p>Share</p>
                    
-                </div>
+                </div> -->
+
+                
+                <button id="initiateBtn">Start Sharing</button>  
+                <button id="stopBtn" style="display:none">Stop Sharing</button>  <!--Added newly-->
                 
              </div>
              <div class="main__controls__block" onclick="location.href='/view';">
