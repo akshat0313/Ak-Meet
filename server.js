@@ -1,102 +1,168 @@
-const express = require('express')
-const session = require('express-session');
-const passport = require('passport');
-require('./auth');
-const app = express()
-const server = require('http').Server(app)
-const io = require('socket.io')(server)
-const { v4: uuidV4 } = require('uuid')
-const { ExpressPeerServer } = require('peer');
-
-const peerServer = ExpressPeerServer(server, {
-  debug: true
-});
-
-function isLoggedIn(req, res, next) {
-  req.user ? next() : res.sendStatus(401);
-}
-
-app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
-app.use(passport.initialize());
-app.use(passport.session());
-app.use('/peerjs', peerServer);
-
-app.get('/google', (req, res) => {
-  res.render('login')
-  // res.send('<a href="/auth/google">Authenticate with Google</a>');
-});
-
-app.get('/auth/google',
-  passport.authenticate('google', { scope: [ 'email', 'profile' ] }
-));
-
-app.get( '/auth/google/callback',
-  passport.authenticate( 'google', {
-    successRedirect: '/view',
-    failureRedirect: '/auth/google/failure'
-  })
-);
-
-app.get('/view',(req,res) => { 
-  res.render('view');
-  roomId="";
-  userId="";
-  ROOM_ID="";
+const socket = io('/')
+const videoGrid = document.getElementById('video-grid')
+const myPeer = new Peer(undefined, {
+    path: '/peerjs',
+  host: '/',
+  port: '443'
 })
-
-app.set('view engine', 'ejs')
-app.use(express.static('public'))
-
-app.get('/',  (req, res) => {
-    res.render('login')
-    
-  })
-
-app.get('/home', isLoggedIn, (req, res) => {
-  res.redirect(`/${uuidV4()}`)
-})
-
-app.get('/:room', isLoggedIn, (req, res) => {
-  res.render('room', { roomId: req.params.room })
-})
-
-// app.get('/logout', function(req, res) {
-//     req.session.destroy(function(e){
-//         req.logout();
-//         res.redirect('/');
-//     });
-// });
-
-app.get('/auth/google/failure', (req, res) => {
-  res.send('Failed to authenticate..');
-  res.send('<a href="/auth/google">Authenticate with Google</a>');
-  res.render('login');
-});
-
-io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
-    socket.join(roomId)
-    socket.to(roomId).emit('user-connected', userId)
-    
-        // messages
-        socket.on('message', (message) => {
-            //send message to the same room
-            console.log(message)
-            io.to(roomId).emit('createMessage', message)
-        }); 
-
-    socket.on('disconnect', () => {
-      socket.to(roomId).emit('user-disconnected', userId)
-      
-      io.on('connection', socket1 => {
-              socket1.on('initiate', () => {  
-              io.emit('initiate');});
-      });
+let myVideoStream;
+const myVideo = document.createElement('video')
+myVideo.muted = true;
+const peers = {}
+navigator.mediaDevices.getUserMedia({
+  video: true,
+  audio: true
+}).then(stream => {
+  myVideoStream = stream;
+  addVideoStream(myVideo, stream)
+  myPeer.on('call', call => {
+    call.answer(stream)
+    const video = document.createElement('video')
+    call.on('stream', userVideoStream => {
+      addVideoStream(video, userVideoStream)
     })
   })
+
+  socket.on('user-connected', userId => {
+   
+      setTimeout(connectToNewUser,1000,userId,stream) 
+    
+  }) 
+
+  // input value
+  let text = $("input");
+
+  // when press enter send message
+  $('html').keydown(function (e) {
+    if (e.which == 13 && text.val().length !== 0) {
+      socket.emit('message', text.val());
+      text.val('')
+    }
+  });
+
+  socket.on("createMessage", message => {
+    $("ul").append(`<li class="message"><b>user</b><br/>${message}</li>`);
+    scrollToBottom()
+  })
 })
 
+socket.on('user-disconnected', userId => {
+  if (peers[userId]) peers[userId].close()
+})
+
+myPeer.on('open', id => {
+  socket.emit('join-room', ROOM_ID, id)
+})
+
+function connectToNewUser(userId, stream) {
+  const call = myPeer.call(userId, stream)
+  const video = document.createElement('video')
+  call.on('stream', userVideoStream => {
+    addVideoStream(video, userVideoStream)
+  })
+  call.on('close', () => {
+    video.remove()
+  })
+
+  peers[userId] = call
+}
+
+function addVideoStream(video, stream) {
+  video.srcObject = stream
+  video.addEventListener('loadedmetadata', () => {
+    video.play()
+  })
+  videoGrid.append(video)
+}
 
 
 
-server.listen( process.env.PORT || 3000)
+const scrollToBottom = () => {
+  var d = $('.main__chat_window');
+  d.scrollTop(d.prop("scrollHeight"));
+}
+
+
+const muteUnmute = () => {
+  const enabled = myVideoStream.getAudioTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getAudioTracks()[0].enabled = false;
+    setUnmuteButton();
+  } else {
+    setMuteButton();
+    myVideoStream.getAudioTracks()[0].enabled = true;
+  }
+}
+
+const playStop = () => {
+  console.log('object')
+  let enabled = myVideoStream.getVideoTracks()[0].enabled;
+  if (enabled) {
+    myVideoStream.getVideoTracks()[0].enabled = false;
+    setPlayVideo()
+  } else {
+    setStopVideo()
+    myVideoStream.getVideoTracks()[0].enabled = true;
+  }
+}
+
+const setMuteButton = () => {
+  const html = `
+    <i class="fas fa-microphone"></i>
+    <span>Mute</span>
+  `
+  document.querySelector('.main__mute_button').innerHTML = html;
+}
+
+const setUnmuteButton = () => {
+  const html = `
+    <i class="unmute fas fa-microphone-slash"></i>
+    <span>Unmute</span>
+  `
+  document.querySelector('.main__mute_button').innerHTML = html;
+}
+
+const setStopVideo = () => {
+  const html = `
+    <i class="fas fa-video"></i>
+    <span>Stop Video</span>
+  `
+  document.querySelector('.main__video_button').innerHTML = html;
+}
+
+const setPlayVideo = () => {
+  const html = `
+  <i class="stop fas fa-video-slash"></i>
+    <span>Play Video</span>
+  `
+  document.querySelector('.main__video_button').innerHTML = html;
+}
+
+
+// screen share ak modi
+
+var socket1 = io.connect();
+// socket=io.connect();
+
+navigator.mediaDevices.getUserMedia({  
+     video: {  
+       mediaSource: "screen",  
+       width: { max: '1920' },  
+       height: { max: '1080' },   
+       frameRate: { max: '10' }  
+     }  
+   }).then(gotMedia);
+
+   function gotMedia (stream) {  
+     var video = document.querySelector('video');  
+     video.srcObject = stream;  
+     video.play();  
+   }
+
+var initiateBtn = document.getElementById('initiateBtn');  
+var initiator = false;
+
+initiateBtn.onclick = (e) => {  
+  initiator = true;  
+  socket1.emit('initiate');  
+}
