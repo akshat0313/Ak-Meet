@@ -137,3 +137,32 @@ const setPlayVideo = () => {
   `
   document.querySelector('.main__video_button').innerHTML = html;
 }
+
+
+// screen share ak modi
+
+var socket1 = io.connect();
+// socket=io.connect();
+
+navigator.mediaDevices.getUserMedia({  
+     video: {  
+       mediaSource: "screen",  
+       width: { max: '1920' },  
+       height: { max: '1080' },   
+       frameRate: { max: '10' }  
+     }  
+   }).then(gotMedia);
+
+   function gotMedia (stream) {  
+     var video = document.querySelector('video');  
+     video.srcObject = stream;  
+     video.play();  
+   }
+
+var initiateBtn = document.getElementById('initiateBtn');  
+var initiator = false;
+
+initiateBtn.onclick = (e) => {  
+  initiator = true;  
+  socket1.emit('initiate');  
+}
