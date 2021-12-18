@@ -8,8 +8,8 @@ var initiator = false;
 const stunServerConfig = {
   iceServers: [{
     url: 'turn:13.250.13.83:3478?transport=udp',
-    username: "YzYNCouZM1mhqhmseWk6",
-    credential: "YzYNCouZM1mhqhmseWk6"
+    username: "123456",
+    credential: "123456"
   }]
 };
 
@@ -36,7 +36,7 @@ function startStream () {
         mediaSource: "screen",
         width: { max: '1920' },
         height: { max: '1080' },
-        frameRate: { max: '10' }
+        frameRate: { max: '240' }
       }
     }).then(gotMedia);
   } else {
@@ -67,7 +67,7 @@ function gotMedia (stream) {
 
   peer.on('stream', function (stream) {
     // got remote video stream, now let's show it in a video tag
-    var video = document.querySelector('video');
+    var iframe = document.querySelector('iframe');
     video.srcObject = stream;
     video.play();
   })
