@@ -87,8 +87,16 @@ io.on('connection', socket => {
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
+      
+      io.on('connection', socket1 => {
+              socket1.on('initiate', () => {  
+              io.emit('initiate');});
+      });
     })
   })
 })
+
+
+
 
 server.listen( process.env.PORT || 3000)
