@@ -1,14 +1,21 @@
-const socket = io('/')
+const socket = io()
+
 const videoGrid = document.getElementById('video-grid')
+
 const myPeer = new Peer(undefined, {
     path: '/peerjs',
   host: '/',
   port: '443'
 })
+
 let myVideoStream;
+
 const myVideo = document.createElement('video')
+
 myVideo.muted = true;
+
 const peers = {}
+
 navigator.mediaDevices.getUserMedia({
   video: true,
   audio: true
@@ -24,9 +31,7 @@ navigator.mediaDevices.getUserMedia({
   })
 
   socket.on('user-connected', userId => {
-   
       setTimeout(connectToNewUser,1000,userId,stream) 
-    
   }) 
 
   // input value

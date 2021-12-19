@@ -16,7 +16,8 @@ const peerServer = ExpressPeerServer(server, {
 });
 
 function isLoggedIn(req, res, next) {
-  req.user ? next() : res.sendStatus(401);
+  // req.user ? next() : res.sendStatus(401);
+  next()
 }
 
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
@@ -75,10 +76,10 @@ app.get('/sendMail',isLoggedIn, (req,res)=>{
     to: `${req.query.reciever}, ${req.user.email}`,
     subject: `Scheduled Meeting on the topic ${req.query.topic}`,
     text: `A meeting is scheduled by ${req.user.displayName} on ${req.query.date}`+
-          `at ${req.query.time} on the topic of ${req.query.topic}. 
-           The link for the meet is ${meetlink}.
-           Please Join the meet on time.
-           This is a computer generated Mail. Another reminder mail will be sent to you before the meeting`
+          ` at ${req.query.time} on the topic of ${req.query.topic}. 
+The link for the meet is ${meetlink}.
+Please Join the meet on time.
+This is a computer generated Mail. Another reminder mail will be sent to you before the meeting`
   };
   
   transporter.sendMail(mailOptions);
@@ -112,6 +113,7 @@ app.get('/auth/google/failure', (req, res) => {
 });
 
 io.on('connection', socket => {
+  console.log('connected')
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId)
     socket.to(roomId).emit('user-connected', userId)
