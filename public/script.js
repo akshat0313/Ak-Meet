@@ -1,4 +1,4 @@
-const socket = io()
+socket = io()
 
 const videoGrid = document.getElementById('video-grid')
 
@@ -20,6 +20,7 @@ navigator.mediaDevices.getUserMedia({
   myVideoStream = stream;
 
   addVideoStream(myVideo, stream)
+
   myPeer.on('call', call => {
     call.answer(stream)
     const video = document.createElement('video')
@@ -30,6 +31,11 @@ navigator.mediaDevices.getUserMedia({
 
   socket.on('user-connected', userId => {
     console.log('user-connected')
+    connectToNewUser(userId, stream) 
+  }) 
+
+  socket.on('viewScreen', userId => {
+    console.log('screen-shared')
     connectToNewUser(userId, stream) 
   }) 
 
