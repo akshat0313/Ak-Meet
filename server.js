@@ -67,24 +67,27 @@ app.get('/sendMail',isLoggedIn, (req,res)=>{
   var transporter = nodemailer.createTransport({service: 'gmail', 
   auth: {user: process.env.email,pass: process.env.app_pass}});
   
-  var meetlink =  `localhost:` +  (process.env.PORT) ? `${process.env.PORT}` : `3000` + `/${uuidV4()}`
+  var port =  (process.env.PORT) ? `${process.env.PORT}` : `3000`
+  var meetlink =  `localhost:` + port + `/${uuidV4()}`
 
   var mailOptions = {
     from: process.env.email,
     to: `${req.query.reciever}, ${req.user.email}`,
     subject: `Scheduled Meeting on the topic ${req.query.topic}`,
-    text: ` A meeting is scheduled by ${req.user.displayName} on ${req.query.date} 
-          at ${req.query.t} on the topic of ${req.query.topic}. The link for the meet is ${meetlink}.
-          Please Join the meet on time. This is a computer generated Mail. Another reminder mail will be 
-          sent to you before the meeting`
+    text: `A meeting is scheduled by ${req.user.displayName} on ${req.query.date}`+
+          `at ${req.query.time} on the topic of ${req.query.topic}. 
+           The link for the meet is ${meetlink}.
+           Please Join the meet on time.
+           This is a computer generated Mail. Another reminder mail will be sent to you before the meeting`
   };
   
   transporter.sendMail(mailOptions);
+  console.log(req.query.date)
 
   var date = req.query.date.split("-")
   var time = req.query.time.split(":")
 
-  cron.schedule(`${time[0]} ${time[1]} ${date[1]} ${date[2]}`, () => {
+  cron.schedule(`${time[0]} ${time[1]} ${date[2]} ${date[1]} *`, () => {
     transporter.sendMail(mailOptions);
   });
 
