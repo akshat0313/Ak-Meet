@@ -16,17 +16,17 @@
         flex-direction: row;
         flex-wrap: wrap;
         display: grid;
-        grid-template-columns: repeat(auto-fill, 300px);
-        grid-auto-rows: 300px;
-        width: 100%; 
-        height:100%;
+        grid-template-columns: repeat(auto-fill, 375px);
+        grid-auto-rows: 250px;
+        width: 100%;
+        height: 100%
       }
-      
       video {
          width: 100%;
          height: 100%;
-         object-fit: cover;
-    }
+         object-fit: contain;
+         border: 1px solid white;
+         }
     </style>
 </head>
 <body>
@@ -48,7 +48,7 @@
                    <span>Stop Video</span>
                 </div>
                 <div onclick="startScreenShare()" class="main__controls__button main__ScreenShare_button" >
-                  <i class="fas fa-video"></i>
+                  <i class="fas fa-desktop"></i>
                   <span>Screen Share</span>
                </div>
              </div>
