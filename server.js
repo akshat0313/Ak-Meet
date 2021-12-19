@@ -16,8 +16,8 @@ const peerServer = ExpressPeerServer(server, {
 });
 
 function isLoggedIn(req, res, next) {
-  // req.user ? next() : res.sendStatus(401);
-  next()
+  req.user ? next() : res.sendStatus(401);
+  // next()
 }
 
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
