@@ -17,6 +17,7 @@ const peerServer = ExpressPeerServer(server, {
 
 function isLoggedIn(req, res, next) {
   req.user ? next() : res.sendStatus(401);
+  // next()
 }
 
 app.use(session({ secret: 'cats', resave: false, saveUninitialized: true }));
@@ -113,15 +114,17 @@ app.get('/auth/google/failure', (req, res) => {
 
 io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
+    
     socket.join(roomId)
+
     socket.to(roomId).emit('user-connected', userId)
     
         // messages
-        socket.on('message', (message) => {
-            //send message to the same room
-            console.log(message)
-            io.to(roomId).emit('createMessage', message)
-        }); 
+    socket.on('message', (message) => {
+        //send message to the same room
+        console.log(message)
+        io.to(roomId).emit('createMessage', message)
+    }); 
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
