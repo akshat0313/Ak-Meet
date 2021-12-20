@@ -36,6 +36,13 @@
       height: 100%;
       object-fit: cover;
     }
+
+    #sketch{
+          width: 100%;
+          height: 100%;
+          background-color:white;
+    }
+
   </style>
 </head>
 <body>
@@ -43,8 +50,16 @@
        <div class="main__left">
           <div class="main__videos">
              <div id="video-grid">
-       
-             </div>
+                
+            </div>
+            <div id="sketch" style="display: none"> <!--Initially hidden whiteboard-->
+               <canvas className="board" id="board"></canvas>
+               <div style="text-align: center">
+                  <i class="fas fa-pen" onClick="changeMode()"></i>
+                  <i class="fas fa-eraser" onClick="changeMode()"></i>
+                  <button id="clr">Clear board</button>
+               </div>
+            </div>
           </div>
           <div class="main__controls">
              <div class="main__controls__block">
@@ -65,12 +80,13 @@
                 </div>
                 
              </div>
-             <div class="main__controls__block" onclick="location.href='/view';">
+             <div class="main__controls__block" >
                 <div class="main__controls__button" onclick="location.href='/view';">
                    <a href="/view"><span class="leave_meeting" onclick="location.href='/view';">Leave Meeting</span></a>
                 </div>
-             </div>
-          </div>
+               </div>
+               <div onClick="board()">Whiteboard</div>
+            </div>
        </div>
        <div class="main__right">
           <div class="main__header">
