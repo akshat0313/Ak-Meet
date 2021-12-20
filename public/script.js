@@ -45,7 +45,7 @@ navigator.mediaDevices.getUserMedia({
   // when press enter send message
   $('html').keydown(function (e) {
     if (e.which == 13 && text.val().length !== 0) {
-      socket.emit('message', text.val(), user_name_google);
+      socket.emit('message', text.val());
       text.val('')
     }
   });
@@ -53,7 +53,15 @@ navigator.mediaDevices.getUserMedia({
   socket.on("createMessage", (message,userName) => {
     var date = new Date();
     let hour = date.getHours();
+    if(hour<10){
+      hour = hour.toString();
+      hour = "0"+hour;
+    }
     let minutes = date.getMinutes();
+    if(minutes<10){
+      minutes = minutes.toString();
+      minutes = "0"+minutes;
+    }
     $("ul").append(`<li class="message"><b>${userName}</b><br/>${message}<div style='text-align: right; font-size: xx-small; color:grey; width:90%'>${hour}:${minutes}</div></li>`);
     scrollToBottom()
   })
@@ -64,7 +72,7 @@ socket.on('user-disconnected', userId => {
 })
 
 myPeer.on('open', id => {
-  socket.emit('join-room', ROOM_ID, id)
+  socket.emit('join-room', ROOM_ID, id, user_name_google)
 })
 
 function connectToNewUser(userId, stream) {
