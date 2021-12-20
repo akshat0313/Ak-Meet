@@ -137,3 +137,97 @@ const setPlayVideo = () => {
   `
   document.querySelector('.main__video_button').innerHTML = html;
 }
+
+
+// async function startCapture(displayMediaOptions) {
+//   let captureStream = null;
+
+//   try {
+//     captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+//   } catch(err) {
+//     console.error("Error: " + err);
+//   }
+//   return captureStream;
+// }
+
+//the old one is above
+
+var screenShareState = 0;
+
+async function startCapture() {
+  logElem.innerHTML = "";
+
+  try {
+    videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+    dumpOptionsInfo();
+    document.getElementById("start").innerHTML="Stop Sharing";
+    // document.getElementById("start").id="stop";
+    screenShareState = 1;
+    return false;
+  } catch(err) {
+    console.error("Error: " + err);
+  }
+}
+
+
+//this is the new async method of streaming
+
+
+const videoElem = document.getElementById("video");
+const logElem = document.getElementById("log");
+// const startElem = document.getElementById("start");
+// const stopElem = document.getElementById("stop");
+
+// Options for getDisplayMedia()
+
+var displayMediaOptions = {
+  video: {
+    cursor: "always",
+    // displaySurface: "monitor"
+  },
+  audio: true
+};
+
+// Set event listeners for the start and stop buttons
+document.getElementById("scrsh1").addEventListener("click", function(evt) {
+  if (screenShareState===0){
+    startCapture();
+  }
+  if (screenShareState===1){
+    stopCapture();
+  }
+}, false);
+
+// document.getElementById("stop").addEventListener("click", function(evt) {
+//   stopCapture();
+// }, false);
+
+function stopCapture(evt) {
+  let tracks = videoElem.srcObject.getTracks();
+
+  tracks.forEach(track => track.stop());
+  videoElem.srcObject = null;
+  document.getElementById("start").innerHTML="Start Sharing";
+  // document.getElementById("stop").id="start";
+  screenShareState = 0;
+  return false;
+}
+
+function dumpOptionsInfo() {
+  const videoTrack = videoElem.srcObject.getVideoTracks()[0];
+
+  console.info("Track settings:");
+  console.info(JSON.stringify(videoTrack.getSettings(), null, 2));
+  console.info("Track constraints:");
+  console.info(JSON.stringify(videoTrack.getConstraints(), null, 2));
+}
+
+function copyurl(){
+  var meetURL = window.location.href;
+  navigator.clipboard.writeText(meetURL);
+  document.getElementById("urlcpy-fn").innerHTML="COPIED!";
+}
+
+function clearmodal(){
+  document.getElementById("urlcpy-fn").innerHTML="";
+}
