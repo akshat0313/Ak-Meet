@@ -17,6 +17,10 @@
   <script src="script.js" defer></script>
   <script src='https://wzrd.in/standalone/copy-button@latest'></script>
   <script src="https://kit.fontawesome.com/c939d0e917.js"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
   <link rel="stylesheet" href="style.css">
   <title>Document</title>
   <style>
@@ -33,18 +37,57 @@
     
     video {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      /* height: 100%; */
+      object-fit: fill;
     }
+
+    #video {
+  border: 1px solid #999;
+  /* width: 98%; */
+  /* max-width: 860px; */
+  /* object-fit: cover; */
+}
+
+.error {
+  color: red;
+}
+
+.warn {
+  color: orange;
+}
+
+.info {
+  color: darkgreen;
+}
+
   </style>
 </head>
 <body>
+   <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Meeting Details</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            Get a shareable link for this meeting.
+          </div><div><h4 id="urlcpy-fn"></h4></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary" onclick="copyurl();">Copy Meeting Link</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="main">
        <div class="main__left">
           <div class="main__videos">
+
              <div id="video-grid">
-       
+               <video id="video" allow="display-capture" autoplay></video>
              </div>
+             
           </div>
           <div class="main__controls">
              <div class="main__controls__block">
@@ -56,11 +99,18 @@
                    <i class="fas fa-video"></i>
                    <span>Stop Video</span>
                 </div>
+                <button onclick="" class="btn btn-secondary" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                   <!-- <i class="fas fa-video"></i> -->
+                   <span>Share Link</span>
+                </button>
              </div>
              <div class="main__controls__block">
                 
-                <div class="main__controls__button">
-                   <p id="uuid" ><window class="href">Ak-Meet</window></p>
+                <div class="main__controls__button" id="scrsh1">
+                   <!-- <p id="uuid" ><window class="href">Ak-Meet</window></p> -->
+                   <p></p>
+                   <p id="scrsh" ><window class="href" id="start">Start Sharing</window></p>
+                   <!-- <p id="" ><a class="href" id="stop">stop</a></p> -->
                    
                 </div>
                 
@@ -78,7 +128,9 @@
           </div>
           <div class="main__chat_window">
              <ul class="messages">
-                
+               <!-- <strong>Log:</strong> -->
+               <br>
+               <pre id="log"></pre>
              </ul>
  
           </div>
