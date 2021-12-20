@@ -16,7 +16,7 @@ navigator.mediaDevices.getUserMedia({
   video: true,
   audio: true
 }).then(stream => {
-
+  
   myVideoStream = stream;
 
   addVideoStream(myVideo, stream)
@@ -28,7 +28,7 @@ navigator.mediaDevices.getUserMedia({
       addVideoStream(video, userVideoStream)
     })
   })
-
+  
   socket.on('user-connected', userId => {
     console.log('user-connected')
     connectToNewUser(userId, stream) 
@@ -38,20 +38,23 @@ navigator.mediaDevices.getUserMedia({
     console.log('screen-shared')
     connectToNewUser(userId, stream) 
   }) 
-
+  
   // input value
   let text = $("input");
-
+  
   // when press enter send message
   $('html').keydown(function (e) {
     if (e.which == 13 && text.val().length !== 0) {
-      socket.emit('message', text.val());
+      socket.emit('message', text.val(), user_name_google);
       text.val('')
     }
   });
-
-  socket.on("createMessage", message => {
-    $("ul").append(`<li class="message"><b>user</b><br/>${message}</li>`);
+  
+  socket.on("createMessage", (message,userName) => {
+    var date = new Date();
+    let hour = date.getHours();
+    let minutes = date.getMinutes();
+    $("ul").append(`<li class="message"><b>${userName}</b><br/>${message}<div style='text-align: right; font-size: xx-small; color:grey; width:90%'>${hour}:${minutes}</div></li>`);
     scrollToBottom()
   })
 })

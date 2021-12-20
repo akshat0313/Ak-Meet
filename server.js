@@ -96,7 +96,7 @@ This is a computer generated Mail. Another reminder mail will be sent to you bef
 })
 
 app.get('/:room', isLoggedIn, (req, res) => {
-    res.render('room', { roomId: req.params.room })
+    res.render('room', { roomId: req.params.room, userName: req.user.displayName })
 })
 
 // app.get('/logout', function(req, res) {
@@ -120,10 +120,10 @@ io.on('connection', socket => {
     socket.to(roomId).emit('user-connected', userId)
     
         // messages
-    socket.on('message', (message) => {
+    socket.on('message', (message, userName) => {
         //send message to the same room
         console.log(message)
-        io.to(roomId).emit('createMessage', message)
+        io.to(roomId).emit('createMessage', message, userName)
     });
 
     socket.on('ScreenShared',(peerid)=>{
