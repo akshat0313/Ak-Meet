@@ -155,5 +155,5 @@ function copylink(){
   setTimeout(()=>{
     document.getElementById('copyLinkText').innerHTML = "Copy Link";
     document.getElementById('copyLinkText').style.color = ""
-  }, 10000);
+  }, 1000);
 }
