@@ -147,13 +147,3 @@ const setPlayVideo = () => {
   `
   document.querySelector('.main__video_button').innerHTML = html;
 }
-
-function copylink(){
-  navigator.clipboard.writeText(window.location.href);
-  document.getElementById('copyLinkText').innerHTML = "Copied";
-  document.getElementById('copyLinkText').style.color = "green"
-  setTimeout(()=>{
-    document.getElementById('copyLinkText').innerHTML = "Copy Link";
-    document.getElementById('copyLinkText').style.color = ""
-  }, 1000);
-}
