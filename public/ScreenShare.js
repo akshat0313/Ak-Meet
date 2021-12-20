@@ -16,13 +16,16 @@ const startScreenShare = () => {
         return stopScrrenShare()
     }
     try {
+        isScreenShare = true;
         navigator.mediaDevices.getDisplayMedia(displayMediaOptions).then((stream)=>{
             captureStream = stream;
             socket.emit('ScreenShared', peerid)
             const [track] = stream.getVideoTracks();
             track.addEventListener('ended', () => stopScrrenShare());
+        }).catch((err)=>{
+            console.error("Error: " + err);
+            stopScrrenShare();
         });
-        isScreenShare = true
         document.getElementsByClassName("fas fa-desktop")[0].style.color = "red";
         document.getElementById('ScreenShareText').innerHTML = 'Stop Screen Share';
     } catch(err) {
