@@ -130,6 +130,10 @@ io.on('connection', socket => {
       io.to(roomId).emit('viewScreen', peerid)
     })
 
+    socket.on('ScreenSharingStopped',(peerid)=>{
+      io.to(roomId).emit('user-disconnected', peerid)
+    })
+
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
     })
