@@ -150,6 +150,17 @@ const setPlayVideo = () => {
 //   return captureStream;
 // }
 
+// try {
+//   videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+//   dumpOptionsInfo();
+//   document.getElementById("start").innerHTML="Stop Sharing";
+//   // document.getElementById("start").id="stop";
+//   screenShareState = 1;
+//   return false;
+// } catch(err) {
+//   console.error("Error: " + err);
+// }
+
 //the old one is above
 
 var screenShareState = 0;
@@ -157,16 +168,24 @@ var screenShareState = 0;
 async function startCapture() {
   logElem.innerHTML = "";
 
+
   try {
-    videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-    dumpOptionsInfo();
-    document.getElementById("start").innerHTML="Stop Sharing";
-    // document.getElementById("start").id="stop";
-    screenShareState = 1;
-    return false;
-  } catch(err) {
+    isScreenShare = true;
+    navigator.mediaDevices.getDisplayMedia(displayMediaOptions).then((stream)=>{
+        captureStream = stream;
+        socket.emit('ScreenShared', peerid)
+        const [track] = stream.getVideoTracks();
+        track.addEventListener('ended', () => stopScrrenShare());
+        dumpOptionsInfo();
+        document.getElementById("start").innerHTML="Stop Sharing";
+    }).catch((err)=>{
+        console.error("Error: " + err);
+        stopScrrenShare();
+    });
+} catch(err) {
     console.error("Error: " + err);
-  }
+    stopCapture();
+}
 }
 
 
@@ -180,14 +199,17 @@ const logElem = document.getElementById("log");
 
 // Options for getDisplayMedia()
 
-var displayMediaOptions = {
-  video: {
-    cursor: "always",
-    // displaySurface: "monitor"
-  },
-  audio: true
-};
+let captureStream = null;
+const screenSharePeer = new Peer(undefined, {})
+var peerid ;
+var isScreenShare = false;
 
+var displayMediaOptions = {
+    video: {
+      cursor: "always"
+    },
+    audio: true
+};
 // Set event listeners for the start and stop buttons
 document.getElementById("scrsh1").addEventListener("click", function(evt) {
   if (screenShareState===0){
@@ -203,14 +225,21 @@ document.getElementById("scrsh1").addEventListener("click", function(evt) {
 // }, false);
 
 function stopCapture(evt) {
-  let tracks = videoElem.srcObject.getTracks();
+  // let tracks = videoElem.srcObject.getTracks();
 
-  tracks.forEach(track => track.stop());
-  videoElem.srcObject = null;
-  document.getElementById("start").innerHTML="Start Sharing";
+  // tracks.forEach(track => track.stop());
+  // videoElem.srcObject = null;
+ 
   // document.getElementById("stop").id="start";
   screenShareState = 0;
-  return false;
+  socket.emit('ScreenSharingStopped', peerid)
+  let tracks = captureStream.getTracks();
+  tracks.forEach(track => track.stop());
+  captureStream = null;
+  document.getElementById("start").innerHTML="Start Sharing";
+  isScreenShare = false;
+  return false
+
 }
 
 function dumpOptionsInfo() {
@@ -231,3 +260,14 @@ function copyurl(){
 function clearmodal(){
   document.getElementById("urlcpy-fn").innerHTML="";
 }
+
+screenSharePeer.on('open', id => {
+  peerid = id;
+})
+
+screenSharePeer.on('call', call => {
+  call.answer(captureStream)
+  call.on('stream', userVideoStream => {
+      console.log('connected')
+  })
+})
