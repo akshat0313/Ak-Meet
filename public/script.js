@@ -153,10 +153,14 @@ const setPlayVideo = () => {
 
 function copylink(){
   navigator.clipboard.writeText(window.location.href);
-  document.getElementById('copyLinkText').innerHTML = "Copied";
-  document.getElementById('copyLinkText').style.color = "green"
+  document.getElementById('copyLinkText2').innerHTML = "Copied";
+  document.getElementById('copyLinkText1').style.backgroundColor = "green"
   setTimeout(()=>{
-    document.getElementById('copyLinkText').innerHTML = "Copy Link";
-    document.getElementById('copyLinkText').style.color = ""
+    document.getElementById('copyLinkText2').innerHTML = "Copy Meeting Link";
+    document.getElementById('copyLinkText1').style.backgroundColor = "rgba(68, 68, 224, 0.911)"
   }, 1000);
+}
+
+function ShowParticipants(){
+  document.getElementById('ShowParticipantsButton').click()
 }
