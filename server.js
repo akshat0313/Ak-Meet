@@ -7,6 +7,8 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 const { v4: uuidV4 } = require('uuid')
 const { ExpressPeerServer } = require('peer');
+require('dotenv').config()
+
 
 const peerServer = ExpressPeerServer(server, {
   debug: true
@@ -84,6 +86,15 @@ io.on('connection', socket => {
             console.log(message)
             io.to(roomId).emit('createMessage', message)
         }); 
+
+
+        socket.on('ScreenShared',(peerid)=>{
+          io.to(roomId).emit('viewScreen', peerid)
+        })
+    
+        socket.on('ScreenSharingStopped',(peerid)=>{
+          io.to(roomId).emit('user-disconnected', peerid)
+        })
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
