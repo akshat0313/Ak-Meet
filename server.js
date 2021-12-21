@@ -147,6 +147,10 @@ io.on('connection', socket => {
       ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!={"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true})
     })
 
+    socket.on('RoomDetailsRequest',()=>{
+      socket.emit('RoomDetailsResponse',ObjectListofALL[roomId])
+    })
+
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
       ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!=userInfo)

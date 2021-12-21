@@ -3,6 +3,8 @@ socket = io()
 const videoGrid = document.getElementById('video-grid')
 
 const myPeer = new Peer(undefined, {})
+var myPeerID;
+var myRoomDetails;
 
 let myVideoStream;
 
@@ -33,7 +35,7 @@ navigator.mediaDevices.getUserMedia({
     console.log('user-connected')
     connectToNewUser(userId, stream) 
   }) 
-
+  
   socket.on('viewScreen', userId => {
     console.log('screen-shared')
     connectToNewUser(userId, stream) 
@@ -72,7 +74,9 @@ socket.on('user-disconnected', userId => {
 })
 
 myPeer.on('open', id => {
+  myPeerID = id;
   socket.emit('join-room', ROOM_ID, id, user_name_google)
+  myRoomDetails = [{"PeerID":myPeerID,"Name":user_name_google}]
 })
 
 function connectToNewUser(userId, stream) {
@@ -84,7 +88,7 @@ function connectToNewUser(userId, stream) {
   call.on('close', () => {
     video.remove()
   })
-
+  
   peers[userId] = call
 }
 
@@ -171,4 +175,14 @@ function copylink(){
 
 function ShowParticipants(){
   document.getElementById('ShowParticipantsButton').click()
+  socket.emit('RoomDetailsRequest')
 }
+
+
+socket.on('RoomDetailsResponse',(roomDetils)=>{
+  document.getElementById('ParticipantsListMain').innerHTML = ''
+  roomDetils.forEach((value)=>{
+    document.getElementById('ParticipantsListMain').innerHTML += `<div style="width: auto; padding: 10px;">
+    ${value.Name}<i class="fas fa-thumbtack"></i><i class="fas fa-microphone-slash"></i></div>`
+  })
+})
