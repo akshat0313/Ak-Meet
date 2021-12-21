@@ -1,20 +1,26 @@
-const socket = io('/')
+socket = io()
+
 const videoGrid = document.getElementById('video-grid')
-const myPeer = new Peer(undefined, {
-    path: '/peerjs',
-  host: '/',
-  port: '443'
-})
+
+const myPeer = new Peer(undefined, {})
+
 let myVideoStream;
+
 const myVideo = document.createElement('video')
+
 myVideo.muted = true;
+
 const peers = {}
+
 navigator.mediaDevices.getUserMedia({
   video: true,
   audio: true
 }).then(stream => {
+
   myVideoStream = stream;
+
   addVideoStream(myVideo, stream)
+
   myPeer.on('call', call => {
     call.answer(stream)
     const video = document.createElement('video')
@@ -24,9 +30,13 @@ navigator.mediaDevices.getUserMedia({
   })
 
   socket.on('user-connected', userId => {
-   
-      setTimeout(connectToNewUser,1000,userId,stream) 
-    
+    console.log('user-connected')
+    connectToNewUser(userId, stream) 
+  }) 
+
+  socket.on('viewScreen', userId => {
+    console.log('screen-shared')
+    connectToNewUser(userId, stream) 
   }) 
 
   // input value
@@ -138,6 +148,7 @@ const setPlayVideo = () => {
   document.querySelector('.main__video_button').innerHTML = html;
 }
 
+// SCREEN SHARE OLD WITHOUT SOCKET.IO
 
 // async function startCapture(displayMediaOptions) {
 //   let captureStream = null;
@@ -152,75 +163,142 @@ const setPlayVideo = () => {
 
 //the old one is above
 
-var screenShareState = 0;
+// var screenShareState = 0;
 
-async function startCapture() {
-  logElem.innerHTML = "";
+// async function startCapture() {
+//   logElem.innerHTML = "";
 
-  try {
-    videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-    dumpOptionsInfo();
-    document.getElementById("start").innerHTML="Stop Sharing";
-    // document.getElementById("start").id="stop";
-    screenShareState = 1;
-    return false;
-  } catch(err) {
-    console.error("Error: " + err);
-  }
-}
+//   try {
+//     videoElem.srcObject = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+//     dumpOptionsInfo();
+//     document.getElementById("start").innerHTML="Stop Sharing";
+//     // document.getElementById("start").id="stop";
+//     screenShareState = 1;
+//     return false;
+//   } catch(err) {
+//     console.error("Error: " + err);
+//   }
+// }
 
 
 //this is the new async method of streaming
 
 
-const videoElem = document.getElementById("video");
-const logElem = document.getElementById("log");
-// const startElem = document.getElementById("start");
-// const stopElem = document.getElementById("stop");
+// const videoElem = document.getElementById("video");
+// const logElem = document.getElementById("log");
+// // const startElem = document.getElementById("start");
+// // const stopElem = document.getElementById("stop");
 
-// Options for getDisplayMedia()
+// // Options for getDisplayMedia()
 
-var displayMediaOptions = {
-  video: {
-    cursor: "always",
-    // displaySurface: "monitor"
-  },
-  audio: true
-};
+// var displayMediaOptions = {
+//   video: {
+//     cursor: "always",
+//     // displaySurface: "monitor"
+//   },
+//   audio: true
+// };
 
-// Set event listeners for the start and stop buttons
-document.getElementById("scrsh1").addEventListener("click", function(evt) {
-  if (screenShareState===0){
-    startCapture();
-  }
-  if (screenShareState===1){
-    stopCapture();
-  }
-}, false);
-
-// document.getElementById("stop").addEventListener("click", function(evt) {
-//   stopCapture();
+// // Set event listeners for the start and stop buttons
+// document.getElementById("scrsh1").addEventListener("click", function(evt) {
+//   if (screenShareState===0){
+//     startCapture();
+//   }
+//   if (screenShareState===1){
+//     stopCapture();
+//   }
 // }, false);
 
-function stopCapture(evt) {
-  let tracks = videoElem.srcObject.getTracks();
+// // document.getElementById("stop").addEventListener("click", function(evt) {
+// //   stopCapture();
+// // }, false);
 
-  tracks.forEach(track => track.stop());
-  videoElem.srcObject = null;
-  document.getElementById("start").innerHTML="Start Sharing";
-  // document.getElementById("stop").id="start";
-  screenShareState = 0;
-  return false;
+// // function stopCapture(evt) {
+// //   let tracks = videoElem.srcObject.getTracks();
+
+// //   tracks.forEach(track => track.stop());
+// //   videoElem.srcObject = null;
+// //   document.getElementById("start").innerHTML="Start Sharing";
+// //   // document.getElementById("stop").id="start";
+// //   screenShareState = 0;
+// //   return false;
+// // }
+
+// function dumpOptionsInfo() {
+//   const videoTrack = videoElem.srcObject.getVideoTracks()[0];
+
+//   console.info("Track settings:");
+//   console.info(JSON.stringify(videoTrack.getSettings(), null, 2));
+//   console.info("Track constraints:");
+//   console.info(JSON.stringify(videoTrack.getConstraints(), null, 2));
+// }
+
+
+//SCREEN SHARE FINAL
+
+
+
+let captureStream = null;
+const screenSharePeer = new Peer(undefined, {})
+var peerid ;
+var isScreenShare = false;
+
+var displayMediaOptions = {
+    video: {
+      cursor: "always"
+    },
+    audio: true
+};
+  
+
+const startCapture = () => {
+    if(isScreenShare){
+        return stopCapture()
+    }
+    try {
+        isScreenShare = true;
+        navigator.mediaDevices.getDisplayMedia(displayMediaOptions).then((stream)=>{
+            captureStream = stream;
+            socket.emit('ScreenShared', peerid)
+            const [track] = stream.getVideoTracks();
+            track.addEventListener('ended', () => stopCapture());
+        }).catch((err)=>{
+            console.error("Error: " + err);
+            stopCapture();
+        });
+        document.getElementsByClassName("fas fa-desktop")[0].style.color = "red";
+        document.getElementById('ScreenShareText').innerHTML = 'Stop Screen Share';
+    } catch(err) {
+        console.error("Error: " + err);
+        stopCapture();
+    }
 }
 
-function dumpOptionsInfo() {
-  const videoTrack = videoElem.srcObject.getVideoTracks()[0];
 
-  console.info("Track settings:");
-  console.info(JSON.stringify(videoTrack.getSettings(), null, 2));
-  console.info("Track constraints:");
-  console.info(JSON.stringify(videoTrack.getConstraints(), null, 2));
+function stopCapture(){
+    socket.emit('ScreenSharingStopped', peerid)
+    let tracks = captureStream.getTracks();
+    tracks.forEach(track => track.stop());
+    captureStream = null;
+    document.getElementsByClassName("fas fa-desktop")[0].style.color = "";
+    document.getElementById('ScreenShareText').innerHTML = 'Screen Share';
+    isScreenShare = false;
 }
+
+screenSharePeer.on('open', id => {
+    peerid = id;
+})
+
+screenSharePeer.on('call', call => {
+    call.answer(captureStream)
+    call.on('stream', userVideoStream => {
+        console.log('connected')
+    })
+})
+
+
+// END HERE
+
 
 function copyurl(){
   var meetURL = window.location.href;
@@ -231,3 +309,4 @@ function copyurl(){
 function clearmodal(){
   document.getElementById("urlcpy-fn").innerHTML="";
 }
+
