@@ -147,3 +147,13 @@ const setPlayVideo = () => {
   `
   document.querySelector('.main__video_button').innerHTML = html;
 }
+
+function copyurl(){
+  var meetURL = window.location.href;
+  navigator.clipboard.writeText(meetURL);
+  document.getElementById("urlcpy-fn").innerHTML="COPIED!";
+}
+
+function clearmodal(){
+  document.getElementById("urlcpy-fn").innerHTML="";
+}
