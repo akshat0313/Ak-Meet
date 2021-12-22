@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Meeting</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+    <style>
+        *{
+            font-size: x-large;
+            font-family: Arial, Helvetica, sans-serif;
+            color: white;
+        }
+        body{
+            background-color: rgb(0, 0, 0);
+        }
+        .main{
+            margin: 10vh 10vw 10vh 10vw;
+            padding: 20vh 1vw 20vh 1vw;
+            border: 5px solid white;
+            border-style: solid;
+            border-radius: 50px;
+            display: flex;
+            flex-direction: row;
+            align-content: center;
+            justify-content: center;
+            background-color: rgb(54, 54, 54);
+        }
+        input{
+            background-color: rgb(54, 54, 54);
+            border: 1px solid white;
+            color: white;
+            border-radius: 10px;
+        }
+        label{
+            margin-right: 5px ;
+            margin-bottom: 20px;
+            
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="main" class="space-between">
+        <div style="margin-right:10vw;">
+            <h2>Schedule Meeting</h2><br>
+            <form action="/sendMail">
+                <label>For :</label>
+                <input type="email" placeholder="Email" name="reciever"><br>
+                <label>Topic </label>
+                <input type="text" placeholder="Topic" name="topic"><br>
+                <label>Date </label>
+                <input type="date" name="date"><br>
+                <label>Time </label>
+                <input type="time" name="time"><br><br>
+                <input type="submit" value="Schedule">
+            </form>
+        </div>
+        <div style="margin-left: 3vw;">
+            <img src="signup-image-removebg-preview.png" height="420">
+        </div>
+    </div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+
+</body>
+</html>
