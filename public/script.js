@@ -189,7 +189,7 @@ socket.on('RoomDetailsResponse',(roomDetails)=>{
   document.getElementById('ParticipantsListMain').innerHTML = ''
   roomDetails.forEach((value)=>{
     document.getElementById('ParticipantsListMain').innerHTML += `<div style="width: auto; padding: 10px;">
-    ${value.Name}<i class="fas fa-thumbtack" onclick="PinParticipant('${value.PeerID}')"></i><i class="fas fa-microphone-slash" onclick="MuteParticipant('${value.PeerID}')"></i></div>`
+    ${value.Name}<i class="fas fa-minus-circle" onclick="RemoveParticipant('${value.PeerID}')"></i><i class="fas fa-thumbtack" onclick="PinParticipant('${value.PeerID}')"></i><i class="fas fa-microphone-slash" onclick="MuteParticipant('${value.PeerID}')"></i></div>`
   })
 })
 
@@ -228,5 +228,17 @@ function MuteParticipant(peerID){
 socket.on("MuteParticipant",(peerID)=>{
   if(peerID == myPeerID){
     muteUnmute()
+  }
+})
+
+function RemoveParticipant(peerID){
+  if(admin){
+    socket.emit("RemoveOrder",(peerID));
+  }
+}
+
+socket.on("RemoveParticipant",(peerID)=>{
+  if(peerID == myPeerID){
+    document.getElementsByClassName("leave_meeting")[0].click()
   }
 })

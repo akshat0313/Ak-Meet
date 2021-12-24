@@ -5,11 +5,13 @@ require('./auth');
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-const { v4: uuidV4 } = require('uuid')
+const ShortUniqueId = require('short-unique-id');
 const { ExpressPeerServer } = require('peer');
 require('dotenv').config()
 var nodemailer = require('nodemailer');
 var cron = require('node-cron');
+
+const uid = new ShortUniqueId({ length: 6 });
 
 const peerServer = ExpressPeerServer(server, {
   debug: true
@@ -56,7 +58,7 @@ app.get('/',  (req, res) => {
   })
 
 app.get('/home', isLoggedIn, (req, res) => {
-  res.redirect(`/${uuidV4()}`)
+  res.redirect(`/${uid()}`)
 })
 
 app.get('/schedule-meet', isLoggedIn, (req,res)=>{
@@ -69,7 +71,7 @@ app.get('/sendMail',isLoggedIn, (req,res)=>{
   auth: {user: process.env.email,pass: process.env.app_pass}});
   
   var port =  (process.env.PORT) ? `${process.env.PORT}` : `3000`
-  var meetlink =  `localhost:` + port + `/${uuidV4()}`
+  var meetlink =  `localhost:` + port + `/${uid()}`
 
   var mailOptions = {
     from: process.env.email,
@@ -153,6 +155,10 @@ io.on('connection', socket => {
 
     socket.on("MuteOrder",(peerID)=>{
       io.to(roomId).emit('MuteParticipant', peerID)
+    })
+
+    socket.on("RemoveOrder",(peerID)=>{
+      io.to(roomId).emit('RemoveParticipant', peerID)
     })
 
     socket.on('disconnect', () => {
