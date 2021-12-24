@@ -27,30 +27,30 @@ app.get('/google', (req, res) => {
 });
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: [ 'email', 'profile' ] }
-));
+  passport.authenticate('google', { scope: ['email', 'profile'] }
+  ));
 
-app.get( '/auth/google/callback',
-  passport.authenticate( 'google', {
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
     successRedirect: '/view',
     failureRedirect: '/auth/google/failure'
   })
 );
 
-app.get('/view',(req,res) => { 
+app.get('/view', (req, res) => {
   res.render('view');
-  roomId="";
-  userId="";
-  ROOM_ID="";
+  roomId = "";
+  userId = "";
+  ROOM_ID = "";
 })
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
-app.get('/',  (req, res) => {
-    res.render('login')
-    
-  })
+app.get('/', (req, res) => {
+  res.render('login')
+
+})
 
 app.get('/home', isLoggedIn, (req, res) => {
   res.redirect(`/${uuidV4()}`)
@@ -77,13 +77,18 @@ io.on('connection', socket => {
   socket.on('join-room', (roomId, userId) => {
     socket.join(roomId)
     socket.to(roomId).emit('user-connected', userId)
-    
-        // messages
-        socket.on('message', (message) => {
-            //send message to the same room
-            console.log(message)
-            io.to(roomId).emit('createMessage', message)
-        }); 
+
+    // messages
+    socket.on('message', (message) => {
+      //send message to the same room
+      console.log(message)
+      io.to(roomId).emit('createMessage', message)
+    });
+    //Whiteboard
+    socket.on('canvas-data', (data) => {
+      socket.broadcast.emit('canvas-data', data);
+
+    })
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
@@ -91,4 +96,4 @@ io.on('connection', socket => {
   })
 })
 
-server.listen( process.env.PORT || 3000)
+server.listen(process.env.PORT || 3000)

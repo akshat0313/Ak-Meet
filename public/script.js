@@ -50,6 +50,24 @@ navigator.mediaDevices.getUserMedia({
 socket.on('user-disconnected', userId => {
   if (peers[userId]) peers[userId].close()
 })
+socket.on("canvas-data", function(data){
+
+  var root = this;
+  var interval = setInterval(function(){
+      if(root.isDrawing) return;
+      root.isDrawing = true;
+      clearInterval(interval);
+      var image = new Image();
+      var canvas = document.querySelector('#board');
+      var ctx = canvas.getContext('2d');
+      image.onload = function() {
+          ctx.drawImage(image, 0, 0);
+
+          root.isDrawing = false;
+      };
+      image.src = data;
+  }, 200)
+})
 
 myPeer.on('open', id => {
   socket.emit('join-room', ROOM_ID, id)
@@ -206,6 +224,11 @@ function drawOnCanvas() {
         ctx.lineTo(mouse.x, mouse.y);
         ctx.closePath();
         ctx.stroke();
+        if(root.timeout != undefined) clearTimeout(root.timeout);
+            root.timeout = setTimeout(function(){
+                var base64ImageData = canvas.toDataURL("image/png");
+                root.socket.emit("canvas-data", base64ImageData);
+            }, 1000)
     };
 }
 
