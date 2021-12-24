@@ -255,3 +255,12 @@ function changeState(mode){
 const changeMode = (a) => {
   changeState(a);
 }
+function copyurl(){
+  var meetURL = window.location.href;
+  navigator.clipboard.writeText(meetURL);
+  document.getElementById("urlcpy-fn").innerHTML="COPIED!";
+}
+
+function clearmodal(){
+  document.getElementById("urlcpy-fn").innerHTML="";
+}
