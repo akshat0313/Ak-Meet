@@ -186,8 +186,8 @@ function drawOnCanvas() {
 
     var sketch = document.querySelector('#sketch');
     var sketch_style = getComputedStyle(sketch);
-    canvas.width = parseInt(sketch_style.getPropertyValue('width'));
-    canvas.height = parseInt(sketch_style.getPropertyValue('height'));
+    canvas.width = 1100;
+    canvas.height = 500;
 
     var mouse = {x: 0, y: 0};
     var last_mouse = {x: 0, y: 0};
@@ -252,7 +252,6 @@ function changeState(mode){
   }
 }
 
-const changeMode = () => {
-  writeMode=(writeMode===1)?0:1;  //using ternary operator to toggle the value of writeMode between 0 and 1
-  changeState(writeMode);
+const changeMode = (a) => {
+  changeState(a);
 }
