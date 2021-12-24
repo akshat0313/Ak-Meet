@@ -116,8 +116,10 @@ var ObjectListofALL = {}
 
 io.on('connection', socket => {
 
-  socket.on('join-room', (roomId, userId, userNameOrignal) => {
-    
+  socket.on('join-room', async (roomId, userId, userNameOrignal) => {
+
+    await socket.join(roomId)
+
     const userInfo = {"PeerID":userId,"Name":userNameOrignal};
 
     if(ObjectListofALL[roomId]){
@@ -125,8 +127,6 @@ io.on('connection', socket => {
     }else{
       ObjectListofALL[roomId] = [userInfo];
     }
-
-    socket.join(roomId)
 
     socket.to(roomId).emit('user-connected', userId)
     
@@ -151,10 +151,15 @@ io.on('connection', socket => {
       socket.emit('RoomDetailsResponse',ObjectListofALL[roomId])
     })
 
+    socket.on("MuteOrder",(peerID)=>{
+      io.to(roomId).emit('MuteParticipant', peerID)
+    })
+
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
       ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!=userInfo)
     })
+
   })
 })
 

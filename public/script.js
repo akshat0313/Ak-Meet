@@ -5,6 +5,7 @@ const videoGrid = document.getElementById('video-grid')
 const myPeer = new Peer(undefined, {})
 var myPeerID;
 var myRoomDetails;
+var admin = false;
 
 let myVideoStream;
 
@@ -33,7 +34,7 @@ navigator.mediaDevices.getUserMedia({
   
   socket.on('user-connected', userId => {
     console.log('user-connected')
-    connectToNewUser(userId, stream) 
+    setTimeout(connectToNewUser,3000,userId,stream) 
   }) 
   
   socket.on('viewScreen', userId => {
@@ -75,6 +76,7 @@ socket.on('user-disconnected', userId => {
 
 myPeer.on('open', id => {
   myPeerID = id;
+  myVideo.id = id 
   socket.emit('join-room', ROOM_ID, id, user_name_google)
   myRoomDetails = [{"PeerID":myPeerID,"Name":user_name_google}]
 })
@@ -82,6 +84,7 @@ myPeer.on('open', id => {
 function connectToNewUser(userId, stream) {
   const call = myPeer.call(userId, stream)
   const video = document.createElement('video')
+  video.id = userId
   call.on('stream', userVideoStream => {
     addVideoStream(video, userVideoStream)
   })
@@ -179,10 +182,51 @@ function ShowParticipants(){
 }
 
 
-socket.on('RoomDetailsResponse',(roomDetils)=>{
+socket.on('RoomDetailsResponse',(roomDetails)=>{
+  if(roomDetails[0].PeerID == myPeerID){
+    admin = true;
+  }
   document.getElementById('ParticipantsListMain').innerHTML = ''
-  roomDetils.forEach((value)=>{
+  roomDetails.forEach((value)=>{
     document.getElementById('ParticipantsListMain').innerHTML += `<div style="width: auto; padding: 10px;">
-    ${value.Name}<i class="fas fa-thumbtack"></i><i class="fas fa-microphone-slash"></i></div>`
+    ${value.Name}<i class="fas fa-thumbtack" onclick="PinParticipant('${value.PeerID}')"></i><i class="fas fa-microphone-slash" onclick="MuteParticipant('${value.PeerID}')"></i></div>`
   })
+})
+
+function PinParticipant(peerID){
+
+  const PinvideoGrid = document.getElementById('PinVideoGrid')
+  const videoGrid = document.getElementById('video-grid')
+
+  if(PinvideoGrid.style.display=="none"){
+
+    PinvideoGrid.style.display="grid"
+    videoGrid.style.display="none"
+
+    var pinVideo = document.createElement('video')
+    pinVideo.style.width = "100%"
+    var object = document.getElementById(peerID)
+    pinVideo.srcObject = object.srcObject
+
+    pinVideo.addEventListener('loadedmetadata', () => {
+      pinVideo.play()
+    })
+
+    PinvideoGrid.append(pinVideo)
+
+  }else{
+    PinvideoGrid.style.display="none"
+    videoGrid.style.display="grid"
+    PinvideoGrid.innerHTML=""
+  }
+}
+
+function MuteParticipant(peerID){
+  socket.emit("MuteOrder",(peerID));
+}
+
+socket.on("MuteParticipant",(peerID)=>{
+  if(peerID == myPeerID){
+    muteUnmute()
+  }
 })
