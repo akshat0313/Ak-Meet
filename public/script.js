@@ -234,6 +234,8 @@ socket.on("MuteParticipant",(peerID)=>{
 function RemoveParticipant(peerID){
   if(admin){
     socket.emit("RemoveOrder",(peerID));
+  }else{
+    alert("Only admins can remove participants!")
   }
 }
 
