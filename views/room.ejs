@@ -80,6 +80,14 @@
             <div id="video-grid">
        
             </div>
+            <div id="sketch" style="display: none"> <!--Initially hidden whiteboard-->
+               <canvas className="board" id="board" width="800" height="535" style="background: white"></canvas>
+               <div style="text-align: center; background: white">
+                  <i class="fas fa-pen" onClick="changeMode(1)"></i>
+                  <i class="fas fa-eraser" onClick="changeMode(0)"></i>
+                  <button id="clr">Clear board</button>
+               </div>
+            </div>
             <div id="PinVideoGrid" style="display: none;">
        
             </div>
@@ -118,6 +126,7 @@
                   <div class="main__controls__button" onclick="location.href='/view';">
                      <a href="/view"><span class="leave_meeting" onclick="location.href='/view';">Leave Meeting</span></a>
                   </div>
+                  <div id="wbShowHide" onClick="board()">Use Whiteboard</div>
                </div>
             </div>
        </div>

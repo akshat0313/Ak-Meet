@@ -33,57 +33,59 @@ app.get('/google', (req, res) => {
 });
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: [ 'email', 'profile' ] }
-));
+  passport.authenticate('google', { scope: ['email', 'profile'] }
+  ));
 
-app.get( '/auth/google/callback',
-  passport.authenticate( 'google', {
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
     successRedirect: '/view',
     failureRedirect: '/auth/google/failure'
   })
 );
 
-app.get('/view', isLoggedIn, (req,res) => {
+app.get('/view', isLoggedIn, (req, res) => {
   res.render('view');
-  roomId="";
-  userId="";
-  ROOM_ID="";
+  roomId = "";
+  userId = "";
+  ROOM_ID = "";
 })
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
-app.get('/',  (req, res) => {
-    res.render('login')
-  })
+app.get('/', (req, res) => {
+  res.render('login')
+})
 
 app.get('/home', isLoggedIn, (req, res) => {
   res.redirect(`/${uid()}`)
 })
 
-app.get('/schedule-meet', isLoggedIn, (req,res)=>{
-  res.render('schedule',{user:req.user})
+app.get('/schedule-meet', isLoggedIn, (req, res) => {
+  res.render('schedule', { user: req.user })
 })
 
-app.get('/sendMail',isLoggedIn, (req,res)=>{
+app.get('/sendMail', isLoggedIn, (req, res) => {
 
-  var transporter = nodemailer.createTransport({service: 'gmail', 
-  auth: {user: process.env.email,pass: process.env.app_pass}});
-  
-  var port =  (process.env.PORT) ? `${process.env.PORT}` : `3000`
-  var meetlink =  `localhost:` + port + `/${uid()}`
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: process.env.email, pass: process.env.app_pass }
+  });
+
+  var port = (process.env.PORT) ? `${process.env.PORT}` : `3000`
+  var meetlink = `localhost:` + port + `/${uid()}`
 
   var mailOptions = {
     from: process.env.email,
     to: `${req.query.reciever}, ${req.user.email}`,
     subject: `Scheduled Meeting on the topic ${req.query.topic}`,
-    text: `A meeting is scheduled by ${req.user.displayName} on ${req.query.date}`+
-          ` at ${req.query.time} on the topic of ${req.query.topic}. 
+    text: `A meeting is scheduled by ${req.user.displayName} on ${req.query.date}` +
+      ` at ${req.query.time} on the topic of ${req.query.topic}. 
 The link for the meet is ${meetlink}.
 Please Join the meet on time.
 This is a computer generated Mail. Another reminder mail will be sent to you before the meeting`
   };
-  
+
   transporter.sendMail(mailOptions);
   console.log(req.query.date)
 
@@ -98,7 +100,7 @@ This is a computer generated Mail. Another reminder mail will be sent to you bef
 })
 
 app.get('/:room', isLoggedIn, (req, res) => {
-    res.render('room', { roomId: req.params.room, userName: req.user.displayName })
+  res.render('room', { roomId: req.params.room, userName: req.user.displayName })
 })
 
 // app.get('/logout', function(req, res) {
@@ -122,51 +124,56 @@ io.on('connection', socket => {
 
     await socket.join(roomId)
 
-    const userInfo = {"PeerID":userId,"Name":userNameOrignal};
+    const userInfo = { "PeerID": userId, "Name": userNameOrignal };
 
-    if(ObjectListofALL[roomId]){
+    if (ObjectListofALL[roomId]) {
       ObjectListofALL[roomId].push(userInfo);
-    }else{
+    } else {
       ObjectListofALL[roomId] = [userInfo];
     }
 
     socket.to(roomId).emit('user-connected', userId)
-    
-        // messages
+
+    // messages
     socket.on('message', (message) => {
-        //send message to the same room
-        console.log(message)
-        io.to(roomId).emit('createMessage', message, userNameOrignal)
+      //send message to the same room
+      console.log(message)
+      io.to(roomId).emit('createMessage', message, userNameOrignal)
     });
+    //whiteboard
+    socket.on('canvas-data', (data) => {
+      socket.broadcast.emit('canvas-data', data);
 
-    socket.on('ScreenShared',(peerid)=>{
+    })
+
+    socket.on('ScreenShared', (peerid) => {
       io.to(roomId).emit('viewScreen', peerid)
-      ObjectListofALL[roomId].push({"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true});
+      ObjectListofALL[roomId].push({ "PeerID": peerid, "Name": `${userNameOrignal}'s screen`, "isScreen": true });
     })
 
-    socket.on('ScreenSharingStopped',(peerid)=>{
+    socket.on('ScreenSharingStopped', (peerid) => {
       io.to(roomId).emit('user-disconnected', peerid)
-      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!={"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true})
+      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val) => val != { "PeerID": peerid, "Name": `${userNameOrignal}'s screen`, "isScreen": true })
     })
 
-    socket.on('RoomDetailsRequest',()=>{
-      socket.emit('RoomDetailsResponse',ObjectListofALL[roomId])
+    socket.on('RoomDetailsRequest', () => {
+      socket.emit('RoomDetailsResponse', ObjectListofALL[roomId])
     })
 
-    socket.on("MuteOrder",(peerID)=>{
+    socket.on("MuteOrder", (peerID) => {
       io.to(roomId).emit('MuteParticipant', peerID)
     })
 
-    socket.on("RemoveOrder",(peerID)=>{
+    socket.on("RemoveOrder", (peerID) => {
       io.to(roomId).emit('RemoveParticipant', peerID)
     })
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
-      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!=userInfo)
+      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val) => val != userInfo)
     })
 
   })
 })
 
-server.listen( process.env.PORT || 3000)
+server.listen(process.env.PORT || 3000)
