@@ -8,10 +8,13 @@ const io = require('socket.io')(server)
 // const { v4: uuidV4 } = require('uuid')
 const short = require('short-uuid');
 uuidV4 = short.generate
+const ShortUniqueId = require('short-unique-id');
 const { ExpressPeerServer } = require('peer');
 require('dotenv').config()
 var nodemailer = require('nodemailer');
 var cron = require('node-cron');
+
+const uid = new ShortUniqueId({ length: 6 });
 
 const peerServer = ExpressPeerServer(server, {
   debug: true
@@ -58,7 +61,7 @@ app.get('/',  (req, res) => {
   })
 
 app.get('/home', isLoggedIn, (req, res) => {
-  res.redirect(`/${uuidV4()}`)
+  res.redirect(`/${uid()}`)
 })
 
 app.get('/schedule-meet', isLoggedIn, (req,res)=>{
@@ -71,7 +74,7 @@ app.get('/sendMail',isLoggedIn, (req,res)=>{
   auth: {user: process.env.email,pass: process.env.app_pass}});
   
   var port =  (process.env.PORT) ? `${process.env.PORT}` : `3000`
-  var meetlink =  `localhost:` + port + `/${uuidV4()}`
+  var meetlink =  `localhost:` + port + `/${uid()}`
 
   var mailOptions = {
     from: process.env.email,
@@ -98,7 +101,7 @@ This is a computer generated Mail. Another reminder mail will be sent to you bef
 })
 
 app.get('/:room', isLoggedIn, (req, res) => {
-    res.render('room', { roomId: req.params.room })
+    res.render('room', { roomId: req.params.room, userName: req.user.displayName })
 })
 
 // app.get('/logout', function(req, res) {
@@ -114,10 +117,21 @@ app.get('/auth/google/failure', (req, res) => {
   res.render('login');
 });
 
+var ObjectListofALL = {}
+
 io.on('connection', socket => {
-  socket.on('join-room', (roomId, userId) => {
-    
-    socket.join(roomId)
+
+  socket.on('join-room', async (roomId, userId, userNameOrignal) => {
+
+    await socket.join(roomId)
+
+    const userInfo = {"PeerID":userId,"Name":userNameOrignal};
+
+    if(ObjectListofALL[roomId]){
+      ObjectListofALL[roomId].push(userInfo);
+    }else{
+      ObjectListofALL[roomId] = [userInfo];
+    }
 
     socket.to(roomId).emit('user-connected', userId)
     
@@ -125,20 +139,36 @@ io.on('connection', socket => {
     socket.on('message', (message) => {
         //send message to the same room
         console.log(message)
-        io.to(roomId).emit('createMessage', message)
+        io.to(roomId).emit('createMessage', message, userNameOrignal)
     });
 
     socket.on('ScreenShared',(peerid)=>{
       io.to(roomId).emit('viewScreen', peerid)
+      ObjectListofALL[roomId].push({"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true});
     })
 
     socket.on('ScreenSharingStopped',(peerid)=>{
       io.to(roomId).emit('user-disconnected', peerid)
+      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!={"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true})
+    })
+
+    socket.on('RoomDetailsRequest',()=>{
+      socket.emit('RoomDetailsResponse',ObjectListofALL[roomId])
+    })
+
+    socket.on("MuteOrder",(peerID)=>{
+      io.to(roomId).emit('MuteParticipant', peerID)
+    })
+
+    socket.on("RemoveOrder",(peerID)=>{
+      io.to(roomId).emit('RemoveParticipant', peerID)
     })
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
+      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!=userInfo)
     })
+
   })
 })
 
