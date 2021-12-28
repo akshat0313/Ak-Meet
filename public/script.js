@@ -31,10 +31,23 @@ navigator.mediaDevices.getUserMedia({
       addVideoStream(video, userVideoStream)
     })
   })
+
+  socket.on('user-let-in', (userId,userName) => {
+    if(admin){
+      if(confirm(`${userName} has joined press ok to let in`)){
+        socket.emit('UsercanJoin', userId)
+      }else{
+        socket.emit('UsercantJoin', userId)
+      }
+    }
+  }) 
   
   socket.on('user-connected', userId => {
     console.log('user-connected')
-    setTimeout(connectToNewUser,3000,userId,stream) 
+    if(userId!=myPeerID){
+      // setTimeout(connectToNewUser,3000,userId,stream)
+      connectToNewUser(userId,stream)
+    }
   }) 
   
   socket.on('viewScreen', userId => {
@@ -241,6 +254,7 @@ function RemoveParticipant(peerID){
 
 socket.on("RemoveParticipant",(peerID)=>{
   if(peerID == myPeerID){
+    alert('You have been Removed from the meeting')
     document.getElementsByClassName("leave_meeting")[0].click()
   }
 })
