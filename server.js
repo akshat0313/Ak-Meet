@@ -1,4 +1,5 @@
 const express = require('express')
+const path = require("path");
 const session = require('express-session');
 const passport = require('passport');
 require('./auth');
@@ -52,6 +53,7 @@ app.get('/view', isLoggedIn, (req, res) => {
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
+app.set("views", path.join(__dirname, "views")); // Set the views directory
 
 app.get('/', (req, res) => {
   res.render('login')
@@ -59,6 +61,10 @@ app.get('/', (req, res) => {
 
 app.get('/home', isLoggedIn, (req, res) => {
   res.redirect(`/${uid()}`)
+})
+
+app.get('/board', (req, res) => {
+  res.render('board');
 })
 
 app.get('/schedule-meet', isLoggedIn, (req, res) => {

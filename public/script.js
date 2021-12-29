@@ -141,18 +141,19 @@ const muteUnmute = () => {
 }
 
 const board = () => {
-  wb = document.querySelector("#sketch");
-  if (wb.style.display==="none") {
-    wb.style.display="block";
-    document.querySelector("#video-grid").style.display="none";
-    document.querySelector("#wbShowHide").innerText ="Hide Whiteboard";
-    drawOnCanvas();
-  }
-  else{
-    wb.style.display="none";
-    document.querySelector("#video-grid").style.display="grid";
-    document.querySelector("#wbShowHide").innerText ="Use Whiteboard";
-  }
+  // wb = document.querySelector("#sketch");
+  // if (wb.style.display==="none") {
+  //   wb.style.display="block";
+  //   document.querySelector("#video-grid").style.display="none";
+  //   document.querySelector("#wbShowHide").innerText ="Hide Whiteboard";
+  //   drawOnCanvas();
+  // }
+  // else{
+  //   wb.style.display="none";
+  //   document.querySelector("#video-grid").style.display="grid";
+  //   document.querySelector("#wbShowHide").innerText ="Use Whiteboard";
+  // }
+  window.open("/board");
 }
 
 const playStop = () => {
