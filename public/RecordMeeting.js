@@ -1,20 +1,23 @@
 let start = document.getElementById('start');
 let stop  = document.getElementById('stop');
-let ediaRecorder;
+let mediaRecorder;
+let stream ;
 
 start.addEventListener('click', async function(){
-    let stream = await recordScreen();
+    stream = await recordScreen();
     start.style.display = "none";
     stop.style.display = "";
     let mimeType = 'video/webm';
     mediaRecorder = createRecorder(stream, mimeType);
     let node = document.createElement("p");
+    node.style.display = "none";
     node.textContent = "Started recording";
     document.body.appendChild(node);
 })
 
 stop.addEventListener('click', function(){
     mediaRecorder.stop();
+    stream.getTracks() .forEach( track => track.stop() );
     start.style.display = "";
     stop.style.display = "none";
     let node = document.createElement("p");
@@ -44,6 +47,11 @@ function createRecorder (stream, mimeType) {
      saveFile(recordedChunks);
      recordedChunks = [];
   };
+
+  stream.getVideoTracks()[0].onended = function () {
+    stop.click()
+  };
+
   mediaRecorder.start(200); // For every 200ms the stream data will be stored in a separate chunk.
   return mediaRecorder;
 }
