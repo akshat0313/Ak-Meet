@@ -6,6 +6,7 @@ const myPeer = new Peer(undefined, {})
 var myPeerID;
 var myRoomDetails;
 var admin = false;
+var joinedParticipantID;
 
 let myVideoStream;
 
@@ -34,13 +35,25 @@ navigator.mediaDevices.getUserMedia({
 
   socket.on('user-let-in', (userId,userName) => {
     if(admin){
-      if(confirm(`${userName} has joined press ok to let in`)){
-        socket.emit('UsercanJoin', userId)
-      }else{
-        socket.emit('UsercantJoin', userId)
-      }
+      document.getElementById('userJoinedPermisson').click();
+      joinedParticipantID = userId;
+      document.getElementById('modalContent').innerHTML = `${userName} has joined the meeting`;
     }
   }) 
+
+  document.getElementById('PermissionAccepted').onclick = () =>{
+    if(joinedParticipantID){
+      socket.emit('UsercanJoin', joinedParticipantID)
+    }
+    joinedParticipantID = null;
+  }
+
+  document.getElementById('PermissionDenied').onclick = () =>{
+    if(joinedParticipantID){
+      socket.emit('UsercantJoin', joinedParticipantID)
+    }
+    joinedParticipantID = null;
+  }
   
   socket.on('user-connected', userId => {
     console.log('user-connected')
