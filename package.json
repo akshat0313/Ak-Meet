@@ -24,6 +24,7 @@
     "peer": "^0.5.3",
     "peerjs": "^1.3.2",
     "short-unique-id": "^4.4.4",
+    "short-uuid": "^4.2.0",
     "socket.io": "^4.1.3"
   },
   "devDependencies": {
