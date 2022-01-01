@@ -244,3 +244,80 @@ socket.on("RemoveParticipant",(peerID)=>{
     document.getElementsByClassName("leave_meeting")[0].click()
   }
 })
+
+
+let captureStreamRecord = null;
+let isRecord=false
+
+let startRecord = document.getElementById('recordbtn');
+let mediaArray;
+let stream ;
+
+async function recordScreen() {
+    return await navigator.mediaDevices.getDisplayMedia({
+        audio: true, 
+        video: { mediaSource: "screen"}
+    });
+}
+
+
+startRecord.addEventListener('click', async function(){
+    if(isRecord){
+        let node = document.createElement("p");
+        mediaArray.stop();
+        stream.getTracks() .forEach( track => track.stop() );
+        node.textContent = "Stopped recording";
+        document.body.appendChild(node);
+        document.getElementsByClassName("fas fa-cloud-upload-alt")[0].style.color = "";
+        isRecord=false;
+    }else{
+        let MIMEformat = 'video/webm';
+        let node = document.createElement("p");
+        stream = await recordScreen();
+        mediaArray = createRecorder(stream, MIMEformat);
+        node.style.display = "none";
+        node.textContent = "Started recording";
+        document.body.appendChild(node);
+        document.getElementsByClassName("fas fa-cloud-upload-alt")[0].style.color = "red";
+        isRecord=true;
+    }
+})
+
+function genSAVEtodisk(RECmedia){
+
+    const blob = new Blob(RECmedia, {
+       type: 'video/webm'
+     });
+     let filename = window.prompt('Enter file name'),
+         downloadLink = document.createElement('a');
+     downloadLink.href = URL.createObjectURL(blob);
+     downloadLink.download = `${filename}.webm`;
+ 
+     document.body.appendChild(downloadLink);
+     downloadLink.click();
+     URL.revokeObjectURL(blob);
+     document.body.removeChild(downloadLink);
+ }
+
+function createRecorder (stream, MIMEformat) {
+  let RECmedia = []; 
+  const mediaArray = new MediaRecorder(stream);
+
+  mediaArray.onstop = function () {
+     genSAVEtodisk(RECmedia);
+     RECmedia = [];
+  };
+  
+  mediaArray.ondataavailable = function (e) {
+    if (e.data.size > 0) {
+      RECmedia.push(e.data);
+    }  
+  };
+
+  stream.getVideoTracks()[0].onended = function () {
+    stop.click()
+  };
+
+  mediaArray.start(200);
+  return mediaArray;
+}
