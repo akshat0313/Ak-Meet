@@ -120,17 +120,26 @@ io.on('connection', socket => {
 
   socket.on('join-room', async (roomId, userId, userNameOrignal) => {
 
+    socket.to(roomId).emit('RoomDetailsResponse',ObjectListofALL[roomId])
+
     await socket.join(roomId)
 
     const userInfo = {"PeerID":userId,"Name":userNameOrignal};
 
-    if(ObjectListofALL[roomId]){
-      ObjectListofALL[roomId].push(userInfo);
-    }else{
+    if(!ObjectListofALL[roomId]){
       ObjectListofALL[roomId] = [userInfo];
     }
+    
+    socket.to(roomId).emit('user-let-in', userId, userNameOrignal)
+    
+    socket.on('UsercanJoin', (userId1) => {
+      ObjectListofALL[roomId].push(userInfo);
+      io.to(roomId).emit('user-connected', userId1)  
+    })
 
-    socket.to(roomId).emit('user-connected', userId)
+    socket.on('UsercantJoin', (userId1) => {
+      socket.to(roomId).emit('RemoveParticipant', userId1)
+    })
     
         // messages
     socket.on('message', (message) => {
