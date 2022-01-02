@@ -167,7 +167,7 @@ const setPlayVideo = () => {
 }
 
 function copylink(){
-  navigator.clipboard.writeText(window.location.href);
+  navigator.clipboard.writeText(ROOM_ID);
   document.getElementById('copyLinkText2').innerHTML = "Copied";
   document.getElementById('copyLinkText1').style.backgroundColor = "green"
   setTimeout(()=>{
