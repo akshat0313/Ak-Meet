@@ -6,6 +6,7 @@ const myPeer = new Peer(undefined, {})
 var myPeerID;
 var myRoomDetails;
 var admin = false;
+var joinedParticipantID;
 
 let myVideoStream;
 
@@ -31,10 +32,35 @@ navigator.mediaDevices.getUserMedia({
       addVideoStream(video, userVideoStream)
     })
   })
+
+  socket.on('user-let-in', (userId,userName) => {
+    if(admin){
+      document.getElementById('userJoinedPermisson').click();
+      joinedParticipantID = userId;
+      document.getElementById('modalContent').innerHTML = `${userName} has joined the meeting`;
+    }
+  }) 
+
+  document.getElementById('PermissionAccepted').onclick = () =>{
+    if(joinedParticipantID){
+      socket.emit('UsercanJoin', joinedParticipantID)
+    }
+    joinedParticipantID = null;
+  }
+
+  document.getElementById('PermissionDenied').onclick = () =>{
+    if(joinedParticipantID){
+      socket.emit('UsercantJoin', joinedParticipantID)
+    }
+    joinedParticipantID = null;
+  }
   
   socket.on('user-connected', userId => {
     console.log('user-connected')
-    setTimeout(connectToNewUser,3000,userId,stream) 
+    if(userId!=myPeerID){
+      // setTimeout(connectToNewUser,3000,userId,stream)
+      connectToNewUser(userId,stream)
+    }
   }) 
   
   socket.on('viewScreen', userId => {
@@ -275,6 +301,7 @@ function RemoveParticipant(peerID){
 
 socket.on("RemoveParticipant",(peerID)=>{
   if(peerID == myPeerID){
+    alert('You have been Removed from the meeting')
     document.getElementsByClassName("leave_meeting")[0].click()
   }
 })
