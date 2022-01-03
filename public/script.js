@@ -193,12 +193,12 @@ const setPlayVideo = () => {
 }
 
 function copylink() {
-  navigator.clipboard.writeText(window.location.href);
+  navigator.clipboard.writeText(ROOM_ID);
   document.getElementById('copyLinkText2').innerHTML = "Copied";
-  document.getElementById('copyLinkText1').style.backgroundColor = "green"
+  document.getElementById('copyLinkText1').style.backgroundColor = "lightgreen"
   setTimeout(() => {
-    document.getElementById('copyLinkText2').innerHTML = "Copy Meeting Link";
-    document.getElementById('copyLinkText1').style.backgroundColor = "rgba(68, 68, 224, 0.911)"
+    document.getElementById('copyLinkText2').innerHTML = "Meeting Details";
+    document.getElementById('copyLinkText1').style.backgroundColor = "rgb(255, 255, 255)"
   }, 1000);
 }
 
@@ -281,4 +281,10 @@ function ShowChatBox() {
 function RemoveChatBox() {
   document.querySelector('.main__right').style.display = 'none';
   document.querySelector('.main__comment_button').classList.remove('clr-yellow');
+}
+
+function elapsedTimeIntervalRef (){ setInterval(() => {
+  displayedElapsedTime = timeAndDateHandling.getElapsedTime(startDate);
+  document.getElementById("timest").innerHTML = displayedElapsedTime;
+  }, 1000);
 }
