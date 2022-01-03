@@ -12,7 +12,7 @@ let myVideoStream;
 
 const myVideo = document.createElement('video')
 
-myVideo.muted = true;
+myVideo.muted = false;
 
 const peers = {}
 
