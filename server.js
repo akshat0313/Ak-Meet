@@ -33,57 +33,89 @@ app.get('/google', (req, res) => {
 });
 
 app.get('/auth/google',
-  passport.authenticate('google', { scope: [ 'email', 'profile' ] }
-));
+  passport.authenticate('google', { scope: ['email', 'profile'] }
+  ));
 
-app.get( '/auth/google/callback',
-  passport.authenticate( 'google', {
+app.get('/auth/google/callback',
+  passport.authenticate('google', {
     successRedirect: '/view',
     failureRedirect: '/auth/google/failure'
   })
 );
 
-app.get('/view', isLoggedIn, (req,res) => {
+app.get('/view', isLoggedIn, (req, res) => {
   res.render('view');
-  roomId="";
-  userId="";
-  ROOM_ID="";
+  roomId = "";
+  userId = "";
+  ROOM_ID = "";
 })
 
 app.set('view engine', 'ejs')
 app.use(express.static('public'))
 
-app.get('/',  (req, res) => {
-    res.render('login')
-  })
+app.get('/', (req, res) => {
+  res.render('login')
+})
 
 app.get('/home', isLoggedIn, (req, res) => {
   res.redirect(`/${uid()}`)
 })
 
-app.get('/schedule-meet', isLoggedIn, (req,res)=>{
-  res.render('schedule',{user:req.user})
+app.get('/schedule-meet', isLoggedIn, (req, res) => {
+  res.render('schedule', { user: req.user })
 })
 
-app.get('/sendMail',isLoggedIn, (req,res)=>{
+app.get('/sendMail', isLoggedIn, (req, res) => {
 
-  var transporter = nodemailer.createTransport({service: 'gmail', 
-  auth: {user: process.env.email,pass: process.env.app_pass}});
-  
-  var port =  (process.env.PORT) ? `${process.env.PORT}` : `3000`
-  var meetlink =  `localhost:` + port + `/${uid()}`
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: { user: process.env.email, pass: process.env.app_pass }
+  });
 
+  var port = (process.env.PORT) ? `${process.env.PORT}` : `3000`
+  var meetlink = `localhost:` + port + `/${uid()}`
+  //   const htmlText = `
+  //   <h5>A meeting is scheduled by <h3>${req.user.displayName}</h3> on ${req.query.date} at ${req.query.time} on the topic of ${req.query.topic}</h5>. 
+  // <p>The link for the meet is <a>${meetlink}</a>.</p>
+  // <p>Please Join the meet on time.</p>
+  // <p>This is a computer generated Mail. Another reminder mail will be sent to you before the meeting</p>`
+  const htmlText = `
+    <p style="font-size: 14px">Hey,</p>
+    <p style="font-size: 14px">You have a meeting scheduled! Don't forget to mark you calender, looking forward to see you in the meeting.</p>
+    <div style="display: flex; font-size: 14px">
+        <div style="font-weight: 600;">Date:</div>
+        <div style="margin-left: 5px">${req.query.date} at ${req.query.time}</div>
+    </div>
+    <div style="display: flex; font-size: 14px">
+        <div style="font-weight: 600;">Topic:</div>
+        <div style="margin-left: 5px">${req.query.topic}</div>
+    </div>
+    <div style="display: flex; font-size: 14px">
+        <div style="font-weight: 600;">Description:</div>
+        <div style="margin-left: 5px">${req.query.description}</div>
+    </div>
+    <p style="font-size: 14px">The link for the meet is <a href='${meetlink}' style="color: #3968d2; cursor: pointer">${meetlink}</a></p>
+    <p style="font-size: 14px">Please join the meet on time</p>
+    <p style="font-size: 14px">
+        <p style="font-size: 14px; margin-bottom: 0">Cheers,</p>
+        <p style="font-size: 14px; margin-top: 2px">${req.user.displayName}</p>
+    </p>
+    <p style="font-size: 13px;">* This is a computer generated mail. Another reminder mail will be sent to you before
+        the meeting
+    </p>
+`
   var mailOptions = {
     from: process.env.email,
     to: `${req.query.reciever}, ${req.user.email}`,
     subject: `Scheduled Meeting on the topic ${req.query.topic}`,
-    text: `A meeting is scheduled by ${req.user.displayName} on ${req.query.date}`+
-          ` at ${req.query.time} on the topic of ${req.query.topic}. 
+    text: `A meeting is scheduled by ${req.user.displayName} on ${req.query.date}` +
+      ` at ${req.query.time} on the topic of ${req.query.topic}. 
 The link for the meet is ${meetlink}.
 Please Join the meet on time.
-This is a computer generated Mail. Another reminder mail will be sent to you before the meeting`
+This is a computer generated Mail. Another reminder mail will be sent to you before the meeting`,
+    html: htmlText
   };
-  
+
   transporter.sendMail(mailOptions);
   console.log(req.query.date)
 
@@ -98,7 +130,7 @@ This is a computer generated Mail. Another reminder mail will be sent to you bef
 })
 
 app.get('/:room', isLoggedIn, (req, res) => {
-    res.render('room', { roomId: req.params.room, userName: req.user.displayName })
+  res.render('room', { roomId: req.params.room, userName: req.user.displayName })
 })
 
 // app.get('/logout', function(req, res) {
@@ -120,62 +152,62 @@ io.on('connection', socket => {
 
   socket.on('join-room', async (roomId, userId, userNameOrignal) => {
 
-    socket.to(roomId).emit('RoomDetailsResponse',ObjectListofALL[roomId])
+    socket.to(roomId).emit('RoomDetailsResponse', ObjectListofALL[roomId])
 
     await socket.join(roomId)
 
-    const userInfo = {"PeerID":userId,"Name":userNameOrignal};
+    const userInfo = { "PeerID": userId, "Name": userNameOrignal };
 
-    if(!ObjectListofALL[roomId]){
+    if (!ObjectListofALL[roomId]) {
       ObjectListofALL[roomId] = [userInfo];
     }
-    
+
     socket.to(roomId).emit('user-let-in', userId, userNameOrignal)
-    
+
     socket.on('UsercanJoin', (userId1) => {
       ObjectListofALL[roomId].push(userInfo);
-      io.to(roomId).emit('user-connected', userId1)  
+      io.to(roomId).emit('user-connected', userId1)
     })
 
     socket.on('UsercantJoin', (userId1) => {
       socket.to(roomId).emit('RemoveParticipant', userId1)
     })
-    
-        // messages
+
+    // messages
     socket.on('message', (message) => {
-        //send message to the same room
-        console.log(message)
-        io.to(roomId).emit('createMessage', message, userNameOrignal)
+      //send message to the same room
+      console.log(message)
+      io.to(roomId).emit('createMessage', message, userNameOrignal)
     });
 
-    socket.on('ScreenShared',(peerid)=>{
+    socket.on('ScreenShared', (peerid) => {
       io.to(roomId).emit('viewScreen', peerid)
-      ObjectListofALL[roomId].push({"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true});
+      ObjectListofALL[roomId].push({ "PeerID": peerid, "Name": `${userNameOrignal}'s screen`, "isScreen": true });
     })
 
-    socket.on('ScreenSharingStopped',(peerid)=>{
+    socket.on('ScreenSharingStopped', (peerid) => {
       io.to(roomId).emit('user-disconnected', peerid)
-      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!={"PeerID":peerid,"Name":`${userNameOrignal}'s screen`,"isScreen":true})
+      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val) => val != { "PeerID": peerid, "Name": `${userNameOrignal}'s screen`, "isScreen": true })
     })
 
-    socket.on('RoomDetailsRequest',()=>{
-      socket.emit('RoomDetailsResponse',ObjectListofALL[roomId])
+    socket.on('RoomDetailsRequest', () => {
+      socket.emit('RoomDetailsResponse', ObjectListofALL[roomId])
     })
 
-    socket.on("MuteOrder",(peerID)=>{
+    socket.on("MuteOrder", (peerID) => {
       io.to(roomId).emit('MuteParticipant', peerID)
     })
 
-    socket.on("RemoveOrder",(peerID)=>{
+    socket.on("RemoveOrder", (peerID) => {
       io.to(roomId).emit('RemoveParticipant', peerID)
     })
 
     socket.on('disconnect', () => {
       socket.to(roomId).emit('user-disconnected', userId)
-      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val)=> val!=userInfo)
+      ObjectListofALL[roomId] = ObjectListofALL[roomId].filter((val) => val != userInfo)
     })
 
   })
 })
 
-server.listen( process.env.PORT || 3000)
+server.listen(process.env.PORT || 3000)
