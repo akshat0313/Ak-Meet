@@ -27,7 +27,6 @@ const startScreenShare = () => {
             stopScrrenShare();
         });
         document.getElementsByClassName("fas fa-desktop")[0].style.color = "red";
-        document.getElementById('ScreenShareText').innerHTML = 'Stop Screen Share';
     } catch(err) {
         console.error("Error: " + err);
         stopScrrenShare();
@@ -41,7 +40,6 @@ function stopScrrenShare(){
     tracks.forEach(track => track.stop());
     captureStream = null;
     document.getElementsByClassName("fas fa-desktop")[0].style.color = "";
-    document.getElementById('ScreenShareText').innerHTML = 'Screen Share';
     isScreenShare = false;
 }
 

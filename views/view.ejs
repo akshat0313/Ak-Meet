@@ -451,8 +451,16 @@
       <div class="text">
         <p>Welcome</p>
         <p>To Ak-Meet</p>
-        <a href="/home">Start Meeting</a>
+        <a href="/home">Start Meeting</a><br>
+	   <a onclick="joinbyId();">Join by ID</a>
 		<a href="/schedule-meet">Schedule a Meeting</a>
       </div>
   </body>
+  <script>
+	  function joinbyId(){
+		let foo = prompt('Enter Meeting ID to Join');
+		console.log(foo);
+		window.location.href=foo;
+	  }
+  </script>
 </html>
