@@ -229,4 +229,8 @@ Bottom
 }
 .wbControls{
   margin: 0 20px;
+  padding: 6px;
+}
+.wbControls:hover{
+  background: rgb(138, 138, 138)
 }
