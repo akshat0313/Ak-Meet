@@ -175,8 +175,9 @@ Bottom
 }
 
 .messages {
-  color: white;
+  color: #252525;
   list-style: none;
+  padding-left: 8px;
 }
 
 .main__message_container {
