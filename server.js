@@ -74,35 +74,35 @@ app.get('/sendMail', isLoggedIn, (req, res) => {
 
   var port = (process.env.PORT) ? `${process.env.PORT}` : `3000`
   var meetlink = `localhost:` + port + `/${uid()}`
-  //   const htmlText = `
-  //   <h5>A meeting is scheduled by <h3>${req.user.displayName}</h3> on ${req.query.date} at ${req.query.time} on the topic of ${req.query.topic}</h5>. 
-  // <p>The link for the meet is <a>${meetlink}</a>.</p>
-  // <p>Please Join the meet on time.</p>
-  // <p>This is a computer generated Mail. Another reminder mail will be sent to you before the meeting</p>`
   const htmlText = `
-    <p style="font-size: 14px">Hey,</p>
-    <p style="font-size: 14px">You have a meeting scheduled! Don't forget to mark you calender, looking forward to see you in the meeting.</p>
-    <div style="display: flex; font-size: 14px">
-        <div style="font-weight: 600;">Date:</div>
-        <div style="margin-left: 5px">${req.query.date} at ${req.query.time}</div>
+   <div style="background: #f6f8f9; display: flex; justify-content: center; align-items: center; min-height: 460px;">
+    <div style="background: #fff; margin: auto; max-width: 500px; padding: 14px; height: 93%; color: #636271;">
+      <div style="margin-bottom: 20px; font-size: 22px; font-weight: 600; color: #F5CB5C;">AK Meet</div>
+      <p style="font-size: 14px">Hey,</p>
+      <p style="font-size: 14px">You have a meeting scheduled! Don't forget to mark you calender, looking forward to see you in the meeting.</p>
+      <div style="display: flex; font-size: 14px">
+          <div style="font-weight: 600;">Date:</div>
+          <div style="margin-left: 5px">${req.query.date} at ${req.query.time}</div>
+      </div>
+      <div style="display: flex; font-size: 14px">
+          <div style="font-weight: 600;">Topic:</div>
+          <div style="margin-left: 5px">${req.query.topic}</div>
+      </div>
+      <div style="display: flex; font-size: 14px">
+          <div style="font-weight: 600;">Description:</div>
+          <div style="margin-left: 5px">${req.query.description}</div>
+      </div>
+      <p style="font-size: 14px">The link for the meet is <a href="${meetlink}" style="color: #3968d2; cursor: pointer;">${meetlink}</a></p>
+      <p style="font-size: 14px">Please join the meet on time</p>
+      <p style="font-size: 14px">
+          <p style="font-size: 14px; margin-bottom: 0">Cheers,</p>
+          <p style="font-size: 14px; margin-top: 2px">${req.user.displayName}</p>
+      </p>
+      <p style="font-size: 13px;">This is a computer generated mail. Another reminder mail will be sent to you before
+          the meeting
+      </p>
     </div>
-    <div style="display: flex; font-size: 14px">
-        <div style="font-weight: 600;">Topic:</div>
-        <div style="margin-left: 5px">${req.query.topic}</div>
-    </div>
-    <div style="display: flex; font-size: 14px">
-        <div style="font-weight: 600;">Description:</div>
-        <div style="margin-left: 5px">${req.query.description}</div>
-    </div>
-    <p style="font-size: 14px">The link for the meet is <a href='${meetlink}' style="color: #3968d2; cursor: pointer">${meetlink}</a></p>
-    <p style="font-size: 14px">Please join the meet on time</p>
-    <p style="font-size: 14px">
-        <p style="font-size: 14px; margin-bottom: 0">Cheers,</p>
-        <p style="font-size: 14px; margin-top: 2px">${req.user.displayName}</p>
-    </p>
-    <p style="font-size: 13px;">* This is a computer generated mail. Another reminder mail will be sent to you before
-        the meeting
-    </p>
+  </div>
 `
   var mailOptions = {
     from: process.env.email,
