@@ -104,7 +104,15 @@
 
             </div>
             <div id="PinVideoGrid" style="display: none;">
-
+               
+            </div>
+            <div id="sketch" style="display: none; width: 80%; position: relative;"> <!--Initially hidden whiteboard-->
+               <canvas className="board" id="board" style="background: white; border-radius:20px"></canvas>
+               <div style="text-align: center; background: white; border-radius: 40px;">
+                  <i class="fas fa-pen wbControls" onClick="changeMode(1)"></i>
+                  <i class="fas fa-eraser wbControls" onClick="changeMode(0)"></i>
+                  <button id="clr" class="wbControls">Clear board</button>
+               </div>
             </div>
             <div class="main__right">
                <div class="main__header">
@@ -154,6 +162,8 @@
             <div onclick="location.href='/view';" class="main__controls__button bg-red">
                <i style="color: #fff" class="fa fa-phone"></i>
             </div>
+            
+            <div id="wbShowHide" onClick="board()" style="cursor: pointer;">Use Whiteboard</div>
          </div>
 
          <div class="main__controls__block main__controls__right">

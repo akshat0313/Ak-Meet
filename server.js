@@ -147,6 +147,11 @@ io.on('connection', socket => {
         console.log(message)
         io.to(roomId).emit('createMessage', message, userNameOrignal)
     });
+    //whiteboard
+    socket.on('canvas-data', (data) => {
+      socket.broadcast.emit('canvas-data', data);
+
+    })
 
     socket.on('ScreenShared',(peerid)=>{
       io.to(roomId).emit('viewScreen', peerid)
