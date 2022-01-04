@@ -29,13 +29,16 @@
          cursor: pointer;
       }
 
-      .modal-body {
+      #copyLinkText0 {
          font-size: x-large;
+         align-items: center;
+         justify-content: center;
+         text-align: center;
       }
    </style>
 </head>
 
-<body>
+<body onload="elapsedTimeIntervalRef();">
    <!-- Button trigger modal -->
    <button type="button" id="ShowParticipantsButton" class="btn btn-primary" data-bs-toggle="modal"
       data-bs-target="#exampleModal" style="display: none;">
@@ -47,9 +50,11 @@
       <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
          <div class="modal-content">
             <div class="modal-body">
-               <div id="copyLinkText1" onclick="copylink()"
-                  style="background-color:rgba(68, 68, 224, 0.911); margin-bottom: 10px; border-radius: 15px; padding: 20px; cursor: pointer;">
-                  <span id="copyLinkText2"> Copy Meeting Link </span>
+               <div id="copyLinkText0" onclick="copylink()" style="background-color:rgb(226, 226, 226); margin-bottom: 10px; border-radius: 5px; padding: 12px; cursor: pointer;">
+                  <span id="copyLinkText2"> Meeting Details </span>
+               </div>
+               <div id="copyLinkText1" onclick="copylink()" style="border-radius: 5px; padding: 10px; cursor: pointer;">
+                  <span id="copyLinkText2"> Meeting ID :</span><span> <%= roomId %> </span>
                   <i class="far fa-copy"></i>
                </div>
                <div style="width: auto; padding: 10px; margin-top: 20px; font-size: smaller">
@@ -123,7 +128,7 @@
       <div class="main__controls">
 
          <div class="main__controls__block main__controls__left">
-            <div class="time">12:00</div>
+            <div id="timest" class="time">00:00</div>
             <div class="line">|</div>
             <div id="uuid">
                <%= roomId %>
@@ -167,6 +172,9 @@
 <script>
    var socket;
    const user_name_google = "<%= userName %>";
+
+   var latesttime=0;
+
 </script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
@@ -183,5 +191,6 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="RecordMeeting.js"></script>
+<script src="liveTime.js"></script>
 
 </html>
