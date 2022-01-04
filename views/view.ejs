@@ -458,9 +458,14 @@
   </body>
   <script>
 	  function joinbyId(){
-		let foo = prompt('Enter Meeting ID to Join');
-		console.log(foo);
-		window.location.href=foo;
+		let foo = prompt('Enter Meeting ID to Join (example: abc-defg-hij)');
+		if((foo[3]==="-")&&(foo[8]==="-")){
+			console.log(foo);
+			window.location.href=foo;
+		}else{
+			alert("Please enter a proper meeting ID.");
+			window.location.reload();
+		}
 	  }
   </script>
 </html>
