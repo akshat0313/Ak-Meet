@@ -5,17 +5,46 @@ require('./auth');
 const app = express()
 const server = require('http').Server(app)
 const io = require('socket.io')(server)
-const ShortUniqueId = require('short-unique-id');
+// const ShortUniqueId = require('short-unique-id');
 const { ExpressPeerServer } = require('peer');
 require('dotenv').config()
 var nodemailer = require('nodemailer');
 var cron = require('node-cron');
+// const short = require('short-uuid');
+// const v5 = require('uuid');
+var getIdByTime = require('time-uuid/get-by-time');
+var getTime = require('time-uuid/time');
+var generateId = require('time-uuid');
+let status
 
-const uid = new ShortUniqueId({ length: 6 });
+// let uid=new ShortUniqueId({ 
+//   length: 9,
+//   dictionary: 'alpha',
+// })
+
+// const translator = short(short.constants.flickrBase58, {
+//   consistentLength: true,
+// });
+// const uid = translator.generate();
+
+let uid = genId();
+
+function genId() {
+  var id1 = getIdByTime(getTime())
+  var id2 = getIdByTime(getTime())
+  var id3 = getIdByTime(getTime())
+  var id = ((((id1.substring(0, 3))) + "-" + ((id2.substring(id2.length - 5, id2.length - 1))) + "-" + ((id3.substring(id3.length - 8, id3.length - 5)))) || (((id1.substring(id1.length - 4, id1.length - 1))) + "-" + (id2.substring(id2.length - 9, id2.length - 5)) + "-" + (id3.substring(0, 3))))
+  return id
+}
+
 
 const peerServer = ExpressPeerServer(server, {
   debug: true
 });
+
+const process = require('process');
+const { get } = require('https');
+const LeWindows = require('nodemailer/lib/mime-node/le-windows');
 
 function isLoggedIn(req, res, next) {
   req.user ? next() : res.sendStatus(401);
@@ -44,7 +73,9 @@ app.get('/auth/google/callback',
 );
 
 app.get('/view', isLoggedIn, (req, res) => {
-  res.render('view');
+  // uid = (((generateId()).substring(0,3)) || ((generateId()).substring(6,9)))+"-"+(((getIdByTime(getTime())).substring(3,7)) || ((getIdByTime(getTime())).substring(0,4)))+"-"+(((getIdByTime(getTime())).substring(7,10)) || ((getIdByTime(getTime())).substring(4,7)));
+  uid = genId();
+  res.render('view', { uid: uid });
   roomId = "";
   userId = "";
   ROOM_ID = "";
@@ -58,8 +89,9 @@ app.get('/', (req, res) => {
 })
 
 app.get('/home', isLoggedIn, (req, res) => {
-  res.redirect(`/${uid()}`)
+  res.redirect(`/${uid}`)
 })
+
 
 app.get('/schedule-meet', isLoggedIn, (req, res) => {
   res.render('schedule', { user: req.user })
@@ -73,7 +105,8 @@ app.get('/sendMail', isLoggedIn, (req, res) => {
   });
 
   var port = (process.env.PORT) ? `${process.env.PORT}` : `3000`
-  var meetlink = `localhost:` + port + `/${uid()}`
+  var meetlink = `localhost:` + port + `/${uid}`
+
   const htmlText = `
    <div style="background: #f6f8f9; display: flex; justify-content: center; align-items: center; min-height: 460px;">
     <div style="background: #fff; margin: auto; max-width: 500px; padding: 14px; height: 93%; color: #636271;">
@@ -130,7 +163,16 @@ This is a computer generated Mail. Another reminder mail will be sent to you bef
 })
 
 app.get('/:room', isLoggedIn, (req, res) => {
-  res.render('room', { roomId: req.params.room, userName: req.user.displayName })
+  if (req.params.room === uid) {
+    res.render('room', { roomId: req.params.room, userName: req.user.displayName })
+  } else {
+    status = 501
+    res.render('error', { code: status })
+  }
+})
+
+app.get('/error', (req, res) => {
+  res.render('error', { code: status })
 })
 
 // app.get('/logout', function(req, res) {
@@ -179,6 +221,11 @@ io.on('connection', socket => {
       console.log(message)
       io.to(roomId).emit('createMessage', message, userNameOrignal)
     });
+    //whiteboard
+    socket.on('canvas-data', (data) => {
+      socket.broadcast.emit('canvas-data', data);
+
+    })
 
     socket.on('ScreenShared', (peerid) => {
       io.to(roomId).emit('viewScreen', peerid)

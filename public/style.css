@@ -215,3 +215,23 @@ Bottom
 .stop {
   color: #cc3b33;
 }
+#clr {
+  border-radius: 5px;
+  text-decoration: none;
+  outline: none;
+  border: none;
+  padding: 6px 4px;
+  background: #a6a6a6;
+  margin: 10px 20px;
+}
+#clr:hover {
+  background: #2b2a2a;
+  color: white;
+}
+.wbControls{
+  margin: 0 20px;
+  padding: 6px;
+}
+.wbControls:hover{
+  background: rgb(138, 138, 138)
+}
