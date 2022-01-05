@@ -18,7 +18,7 @@
 }
 
 .schedule__form {
-  min-width: 350px;
+  min-width: 370px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -46,7 +46,7 @@
 }
 
 .form-fields label {
-  min-width: 70px;
+  min-width: 125px;
 }
 
 .form-fields input {
@@ -59,7 +59,19 @@
   flex: 1;
 }
 
-.form-fields input:focus {
+.form-fields textarea {
+  padding: 6px;
+  font-size: 16px;
+  background: transparent;
+  border: 1px solid #f5cb5c;
+  color: #fdf7e6;
+  border-radius: 6px;
+  min-height: 38px;
+  flex: 1;
+}
+
+.form-fields input:focus,
+.form-fields textarea:focus {
   outline: none;
 }
 
@@ -102,14 +114,15 @@
     flex-direction: column;
     align-items: flex-start;
   }
-  .form-fields input {
+  .form-fields input,
+  .form-fields textarea {
     width: 100%;
   }
 }
 
 @media (max-width: 500px) {
   .schedule__form {
-    min-width: 250px;
+    min-width: 220px;
   }
   .schedule__hero {
     min-width: 250px;
