@@ -1,12 +1,12 @@
 let start = document.getElementById('start');
-let stop  = document.getElementById('stop');
+let Stop  = document.getElementById('stop');
 let mediaRecorder;
 let stream ;
 
 start.addEventListener('click', async function(){
     stream = await recordScreen();
     start.style.display = "none";
-    stop.style.display = "";
+    Stop.style.display = "";
     let mimeType = 'video/webm';
     mediaRecorder = createRecorder(stream, mimeType);
     let node = document.createElement("p");
@@ -15,11 +15,11 @@ start.addEventListener('click', async function(){
     document.body.appendChild(node);
 })
 
-stop.addEventListener('click', function(){
+Stop.addEventListener('click', function(){
     mediaRecorder.stop();
     stream.getTracks() .forEach( track => track.stop() );
     start.style.display = "";
-    stop.style.display = "none";
+    Stop.style.display = "none";
     let node = document.createElement("p");
     node.textContent = "Stopped recording";
     document.body.appendChild(node);
@@ -28,7 +28,7 @@ stop.addEventListener('click', function(){
 async function recordScreen() {
     return await navigator.mediaDevices.getDisplayMedia({
         audio: true, 
-        video: { mediaSource: "screen"}
+        video: true
     });
 }
 
@@ -49,7 +49,7 @@ function createRecorder (stream, mimeType) {
   };
 
   stream.getVideoTracks()[0].onended = function () {
-    stop.click()
+    Stop.click()
   };
 
   mediaRecorder.start(200); // For every 200ms the stream data will be stored in a separate chunk.
