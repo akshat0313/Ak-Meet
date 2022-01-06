@@ -25,7 +25,7 @@ uploader.on('abort', function(fileInfo) {
 form.onsubmit = function(ev) {
     ev.preventDefault();
     
-    var fileEl = document.getElementById('file');
+    var fileEl = document.getElementById('inputGroupFile01');
     var uploadIds = uploader.upload(fileEl, {
         data: { /* Arbitrary data... */ }
     });
