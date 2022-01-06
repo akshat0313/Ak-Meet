@@ -171,13 +171,13 @@ const board = () => {
   if (wb.style.display==="none") {
     wb.style.display="block";
     document.querySelector("#video-grid").style.display="none";
-    document.querySelector("#wbShowHide").innerText ="Hide Whiteboard";
+    document.querySelector("#wbShowHide").classList.add("bg-yellow");
     drawOnCanvas();
   }
   else{
     wb.style.display="none";
     document.querySelector("#video-grid").style.display="grid";
-    document.querySelector("#wbShowHide").innerText ="Use Whiteboard";
+    document.querySelector("#wbShowHide").classList.remove("bg-yellow");
   }
 }
 
