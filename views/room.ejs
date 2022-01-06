@@ -35,6 +35,10 @@
          justify-content: center;
          text-align: center;
       }
+
+      #upload:hover{
+         background-color: rgb(197, 200, 204);
+      }
    </style>
 </head>
 
@@ -99,13 +103,16 @@
    <div class="modal-dialog">
      <div class="modal-content">
        <div class="modal-header">
-         <h5 class="modal-title">Modal title</h5>
+         <h5 class="modal-title">Share Files With the community</h5>
          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
        </div>
        <div class="modal-body">
          <form id="form">
-            <input type="file" id="file" multiple />
-            <input type="submit" value="Upload" />
+            <div class="input-group mb-3">
+               <label class="input-group-text fas fa-file-upload" for="inputGroupFile01"></label>
+               <input type="file" class="form-control" id="inputGroupFile01">
+                  <input id="upload" type="submit" value="Upload" class="input-group-text fas fa-file-upload"/>
+             </div>
         </form>
        </div>
        <div class="modal-footer">
