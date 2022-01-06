@@ -1,7 +1,8 @@
 import SocketIO from 'socket.io-client';
 import SocketIOFileClient from 'socket.io-file-client';
 
-var socket = io();
+// var socket = io();
+var socket = io('http://localhost:3000');
 var uploader = new SocketIOFileClient(socket);
 var form = document.getElementById('form');
  
