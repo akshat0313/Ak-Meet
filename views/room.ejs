@@ -35,6 +35,10 @@
          justify-content: center;
          text-align: center;
       }
+
+      #upload:hover{
+         background-color: rgb(197, 200, 204);
+      }
    </style>
 </head>
 
@@ -95,6 +99,29 @@
       </div>
    </div>
 
+<div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+   <div class="modal-dialog">
+     <div class="modal-content">
+       <div class="modal-header">
+         <h5 class="modal-title">Share Files With the community</h5>
+         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+       </div>
+       <div class="modal-body">
+         <form id="form">
+            <div class="input-group mb-3">
+               <label class="input-group-text fas fa-file-upload" for="inputGroupFile01"></label>
+               <input type="file" class="form-control" id="inputGroupFile01">
+                  <input id="upload" type="submit" value="Upload" class="input-group-text fas fa-file-upload"/>
+             </div>
+        </form>
+       </div>
+       <div class="modal-footer">
+         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+         <!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+       </div>
+     </div>
+   </div>
+ </div>
 
    <div class="main">
 
@@ -150,6 +177,12 @@
             <div onclick="playStop()" class="main__controls__button main__video_button">
                <i class="fas fa-video"></i>
             </div>
+            <div onclick="" class="main__controls__button main__video_button" id="file-up" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal3">
+               <i class="fab fa-elementor"></i>
+            </div>
+            <div id="wbShowHide" class="main__controls__button main__video_button" onClick="board()">
+               <i class="fas fa-signature"></i>
+            </div>
             <div id="start" class="main__controls__button main__Record_startbutton" type="button">
                <i class="fas fa-record-vinyl"></i>
             </div>
@@ -162,8 +195,6 @@
             <div onclick="location.href='/view';" class="main__controls__button bg-red">
                <i style="color: #fff" class="fa fa-phone"></i>
             </div>
-            
-            <div id="wbShowHide" onClick="board()" style="cursor: pointer;">Use Whiteboard</div>
          </div>
 
          <div class="main__controls__block main__controls__right">
@@ -202,5 +233,6 @@
    integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script src="RecordMeeting.js"></script>
 <script src="liveTime.js"></script>
+<script src="fileUp.js"></script>
 
 </html>
