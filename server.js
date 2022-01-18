@@ -75,7 +75,7 @@ app.get('/auth/google/callback',
 
 app.get('/view', isLoggedIn, (req, res) => {
   // uid = (((generateId()).substring(0,3)) || ((generateId()).substring(6,9)))+"-"+(((getIdByTime(getTime())).substring(3,7)) || ((getIdByTime(getTime())).substring(0,4)))+"-"+(((getIdByTime(getTime())).substring(7,10)) || ((getIdByTime(getTime())).substring(4,7)));
-  uid = genId();
+  // uid = genId();
   res.render('view', { uid: uid });
   roomId = "";
   userId = "";
@@ -93,6 +93,10 @@ app.get('/home', isLoggedIn, (req, res) => {
   res.redirect(`/${uid}`)
 })
 
+app.get('/endmeet', (req,res)=>{
+  uid = genId();
+  res.redirect('/view');
+})
 
 app.get('/schedule-meet', isLoggedIn, (req, res) => {
   res.render('schedule', { user: req.user })
